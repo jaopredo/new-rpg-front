@@ -18,8 +18,9 @@
     "paths": {
       "@/components/*": ["./src/components/*"],
       "@/sass/*": ["./src/sass/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/images/*": ["./src/images/*"]
+      "@/types/*": ["./src/types/index.ts"],
+      "@/images/*": ["./src/images/*"],
+      "@/api/*": ["./src/api/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
