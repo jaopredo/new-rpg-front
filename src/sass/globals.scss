@@ -1,13 +1,46 @@
-@use "./modules/mixins.scss";
+@use 'sass:map';
+@use './modules/mixins';
+@use './modules/colors' as *;
+
+$areas:
+    'strengh',
+    'dexterity',
+    'constituition',
+    'education',
+    'mentality',
+    'social'
+;
 
 *, *::after, *::before {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    border: none;
 }
 
 html, body {
     @include mixins.flex();
     max-width: 100vw;
     min-height: 100vh;
+}
+
+input {
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+fieldset {
+    border: none;
+}
+
+
+@each $attr in $areas {
+    .#{$attr}:nth-child(odd) {
+        background-color: map.get($areas-colors, $attr);
+        color: white;
+        text-shadow: black 1px 1px 4px;
+    }
+    .#{$attr}:nth-child(even) {
+        background-color: map.get($areas-colors, 'block');
+    }
 }

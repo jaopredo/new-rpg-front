@@ -38,7 +38,7 @@ export default function Register() {
             <label htmlFor="email">Email: </label><input id="email" type="text" {...register("email")} />
             <label htmlFor="password">Senha: </label><input id="password" type="password" {...register("password")} />
 
-            <button type="submit">REGISTRAR</button>
+            <button type="submit">LOGIN</button>
             { errorMsg }
         </form>
     </MainContainer>

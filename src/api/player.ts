@@ -1,12 +1,12 @@
 import { PlayerFormValues } from "@/types/"
-import AxiosInstance from "./instance"
+import AxiosService from "."
 
 export async function registerPlayer(data: PlayerFormValues) {
-    const response = await AxiosInstance.post('/player/register', data)
+    const response = await AxiosService.post('/player/register', data)
     return response.data
 }
 
 export async function loginPlayer(data: PlayerFormValues) {
-    const response = await AxiosInstance.post('/player/login', data)
+    const response = await AxiosService.post('/player/login', data)
     return response.data
 }

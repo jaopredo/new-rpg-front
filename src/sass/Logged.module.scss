@@ -1,0 +1,16 @@
+@use "./modules/mixins.scss";
+@use "./modules/colors.scss" as *;
+
+.addIcon {
+    color: $global-green;
+    font-size: 3em;
+
+    transition: font-size 500ms;
+    &:hover {
+        cursor: pointer;
+        font-size: 4em;
+    }
+    &:active {
+        font-size: 3.5em;
+    }
+}

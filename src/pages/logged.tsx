@@ -1,12 +1,27 @@
-import { getCookie } from 'cookies-next'
+import { useEffect, useState, Children } from 'react'
+import { AiOutlineUserAdd } from 'react-icons/ai'
+import Router from 'next/router'
+
+import styles from '@/sass/Logged.module.scss'
 
 /* COMPONENTS */
-import MainContainer from "@/components/MainContainer";
+import MainContainer from "@/components/MainContainer"
+
+/* API */
+import { getCharacter } from '@/api/character'
 
 const Logged: React.FC = () => {
+    const [ charList, setCharList ] = useState<String[]>()
+    useEffect(() => {
+        async function getData() {
+            const response = await getCharacter()
+            setCharList(response)
+        }
+        getData()
+    }, [])
 
     return <MainContainer>
-        { getCookie('token') ? 'Logado':'Não Logado' }
+        <AiOutlineUserAdd onClick={() => Router.push('/register-character')} className={styles.addIcon} />
     </MainContainer>;
 }
 
