@@ -55,8 +55,8 @@ export default function RegisterCharacter() {
     // Atributos máximos de cada raça
     const attrMaxInfos = useRef<Object>()
 
-    const [ raceAttrsInfos, setRaceAttrsInfos ] = useState<Object>()  // Vantagens de cada raça
-    const [ fightStyleSpecsInfos, setFightStyleSpecsInfos ] = useState<Object>()  // Vantagens de cada estilo de luta
+    const [ raceAttrsInfos, setRaceAttrsInfos ] = useState<Object>({})  // Vantagens de cada raça
+    const [ fightStyleSpecsInfos, setFightStyleSpecsInfos ] = useState<Object>({})  // Vantagens de cada estilo de luta
 
     // Informações sobre os pontos gastos
     const [attrSpentPoints, setAttrSpentPoints] = useState(0);  // Pontos gastos nos atributos
@@ -100,7 +100,6 @@ export default function RegisterCharacter() {
             setCharInputInfos(charInputInfosResponse)
             const charInputSpecsResponse = await getCharSpecialitys()
             setCharSpecsInfos(charInputSpecsResponse)
-            console.log(charInputSpecsResponse)
         }
         getData()
     }, [])
@@ -138,6 +137,78 @@ export default function RegisterCharacter() {
     }
 
 
+    // Função que lida quando a raça muda
+    const [ lastRace, setLastRace ] = useState<"human" | "animal" | "rockman" | "vampire">();
+    const handleRaceChange = (e: any) => {
+        const { value: race } = e.target
+        setRaceAdvantages(raceAdvantages.current?.[race])  // Muda o texto das vantagens
+        setAttrMax(attrMaxInfos.current?.[race])  // Muda até qual valor pode ser colocado
+
+        // Retiro as vantagens da última raça colocada
+        raceAttrsInfos?.[lastRace]?.forEach(attr => {
+            const newValue = actualAttrValues.current?.[attr[0]] - attr[1]
+            changeActualValue(newValue, attr[0])
+            setMinValue(1, attr[0])
+            setValue(
+                `attributes.${attr[0]}`,
+                newValue
+            )
+        })
+
+        // Para cada raça dentro das raças
+        raceAttrsInfos?.[race].forEach(attr => {  // Eu analiso cada vantagem
+            // Estrutura
+            // [ atributo, bonus ]
+            //      0        1
+            const newValue = actualAttrValues.current?.[attr[0]] + attr[1]
+            const newMinValue = 1 + attr[1]
+            changeActualValue(newValue, attr[0])
+            setMinValue(newMinValue,  attr[0])
+            setValue(
+                `attributes.${attr[0]}`,
+                newValue
+            )
+        })
+
+        // Se a raça for vampíro, eu coloco para que nenhum estilo de luta possa ser colocado
+        const fightSelect = document.getElementById('fightStyle');
+        if (race === 'vampire' || race === "animal") {
+            setValue('basic.fightStyle', 'none')
+            Object.keys(fightStyleSpecsInfos || []).map(fs => removeFightStyleSpecs(fs))
+            fightSelect.disabled = true
+        } else {
+            fightSelect.disabled = false
+        }
+    }
+
+    // Função que lida com a mudança do estilo de luta
+    const [ lastFightStyle, setLastFightStyle ] = useState();
+
+    function removeFightStyleSpecs(fs: string /* FIGHT STYLE */) {
+        fightStyleSpecsInfos[fs]?.forEach(spec => {
+            setValue(`specialitys.${spec[1]}.${spec[0]}`, false)
+            document.getElementById(`${spec[0]}`).disabled = false
+        })
+    }
+
+    const handleFightStyleChange = function (e: any) {
+        const { value: fightStyle } = e.target  // Pego o estilo de luta atual
+        setFightAdvs(fightStyleAdvantages.current[fightStyle])  // Mudo o texto
+
+        let counter = 0  // Contador para quantos estilos de lutas estão iguais comparando os que ja tem e os que vão ser colocados
+        // Trecho de Código para colocar as especialidades das raças (Em desenvolvimento)
+        fightStyleSpecsInfos[fightStyle]?.forEach(spec => {
+            if (getValues(`specialitys.${spec?.[1]}.${spec?.[0]}`)) counter += 1
+            setSpecsSpentPoints(specSpentPoints + counter)
+
+            setValue(`specialitys.${spec?.[1]}.${spec?.[0]}`, true)
+            document.getElementById(`${spec?.[0]}`).disabled = true
+        })
+
+        removeFightStyleSpecs(lastFightStyle)
+    }
+
+
     return <MainContainer><form onSubmit={handleSubmit(onSubmit)} className={styles.charRegister}>
         <fieldset className={styles.basicFieldset}>
             <ul>
@@ -148,7 +219,11 @@ export default function RegisterCharacter() {
                     <label htmlFor='race'>Raça: </label>
                     <select id='race' {...register('basic.race', { 
                         required: true,
-                    })}>
+                        onChange: handleRaceChange,
+                    })} onFocus={e => {
+                        setLastRace(e.target.value)
+                        e.target.blur()
+                    }}>
                         <option disabled selected> -- SELECIONE -- </option>
                         {Children.toArray(Object.keys(raceAttrsInfos || []).map(
                             (adv: string) => <option value={adv}>{racesTraduzidas[adv]}</option>
@@ -163,7 +238,11 @@ export default function RegisterCharacter() {
                     <label htmlFor='fightStyle'>Estilo de Luta: </label>
                     <select id='fightStyle' {...register('basic.fightStyle', { 
                         required: true,
-                    })}>
+                        onChange: handleFightStyleChange,
+                    })} onFocus={e => {
+                        setLastFightStyle(e.target.value)
+                        e.target.blur()
+                    }}>
                         <option disabled selected> -- SELECIONE -- </option>
                         {Children.toArray(Object.keys(fightStyleSpecsInfos || []).map(
                             (adv: string) => <option value={adv}>{fightsTraduzidos[adv]}</option>
