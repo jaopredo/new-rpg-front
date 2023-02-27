@@ -1,3 +1,4 @@
+@use "sass:math";
 @use 'sass:color';
 @use 'sass:map';
 @use './modules/mixins';
@@ -128,7 +129,7 @@ $button-color: rgb(80, 80, 80);
 $nhover: -20;
 $nactive: -40;
 .buttonContainer {
-    @include mixins.flex();
+    @include mixins.flex($dir: column);
     grid-area: button;
     // background: yellow;
 
@@ -162,4 +163,111 @@ $nactive: -40;
     font-size: 2.6em;
     text-align: center;
     width: 100%;
+}
+
+
+$container-radius: 320px;
+$list-radius: 320px;
+$attribute-li-height-width: 100px;
+
+$num-elements: 6;
+$angle: math.div(360, $num-elements);
+$rot: 0;
+
+
+// @function calc-distance() {
+
+// }
+
+.pointsInfoContainer p {
+    @include mixins.flex(center, center);
+    gap: 10px;
+}
+
+.attrContainer {
+    margin-top: 100px;
+    margin-bottom: 100px;
+    
+    width: $container-radius;
+    height: $container-radius;
+
+    background-color: $span-color;
+    border-radius: 50%;
+
+    box-shadow:  5px 5px 10px #262626,
+             -5px -5px 10px #5a5a5a;
+
+    @include mixins.flex();
+
+    h3 {
+        color: white;
+        font-size: 2vw;
+        position: absolute;
+    }
+
+    /* CONFIGURANDO LISTA PARA DISTRIBUIR EM VOLTA DO CÍRCULO */
+    ul {
+        @include mixins.flex();
+
+        width: $list-radius;
+        height: $list-radius;
+        position: relative;
+    }
+
+    li {
+        @include mixins.flex($dir: column);
+
+        // background: blue;
+        border-radius: 50%;
+
+        width: $attribute-li-height-width;
+        height: $attribute-li-height-width;
+
+        position: absolute;
+        // left: 0;
+        // transform-origin: math.div($list-radius, 2);
+        margin: math.div($attribute-li-height-width, 2);
+
+        &:hover label{
+            opacity: 1;
+        }
+    }
+
+    @for $i from 1 through $num-elements {
+        li:nth-child(#{$i}) {
+            transform: rotate($rot * 1deg)
+                translate(math.div($list-radius, 2) + math.div($attribute-li-height-width, 2))
+                rotate($rot * -1deg);
+        }
+        $rot: $rot + $angle
+    }
+
+    label {
+        opacity: 0;
+        font-size: 1.2em;
+        z-index: -1;
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.568);
+        transition: opacity .6s;
+
+        position: absolute;
+    }
+
+    input {
+        border: 4px solid black;
+        background-color: transparent;
+
+        width: 100%;
+        height: 100%;
+
+        text-align: center;
+        font-size: 2em;
+        border-radius: 50%;
+        transition: background-color 500ms;
+
+        &:hover {
+            background-color: rgba(61, 61, 61, 0.171);
+            cursor: pointer;
+        }
+    }
 }

@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect, Children } from 'react'
 import { getCookie } from 'cookies-next'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import Router from 'next/router'
 
 import styles from '@/sass/Sheet.module.scss'
 
 /* COMPONENTS */
 import MainContainer from '@/components/MainContainer'
-import Attributes from '@/components/Attributes'
 import PointsContainer from '@/components/PointsContainer'
+import ErrorParagraph from '@/components/ErrorParagraph'
 
 /* TYPES */
 import {
@@ -21,7 +22,6 @@ import {
 /* API CONFIGS */
 import {
     getLabels,
-    getRaceMaxAttrs,
     getRaceAdvantages,
     getFightStyleAdvantages,
     defaultAttrConfigs,
@@ -30,7 +30,11 @@ import {
     getCharSpecialitys
 } from '@/api/config'
 
+import { registerCharacter } from '@/api/character'
+
 export default function RegisterCharacter() {
+    const [ errorMessage, setErrorMessage ] = useState<string>("")
+
     const [ charInputInfos, setCharInputInfos ] = useState<CharacterInputInfoProps[]>()
     const [ charSpecsInfos, setCharSpecsInfos ] = useState<CharacterInputSpecProps>()
 
@@ -108,11 +112,22 @@ export default function RegisterCharacter() {
     const { register, handleSubmit, setValue, getValues } = useForm<CharacterFormValues>()
 
     const onSubmit: SubmitHandler<CharacterFormValues> = async function (data) {
-        console.log(data)
+        if (specSpentPoints != 0) {
+            setErrorMessage("Use todas suas especialidades!")
+            return
+        }
+        if (attrSpentPoints != attrPoints) {
+            setErrorMessage("Você deve utilizar a quantidade correta de pontos nos atributos")
+            return
+        }
+
+        await registerCharacter(data)
+        Router.push('/register-stand')
     }
 
 
     const [ specPointError, setSpecPointError ] = useState<boolean>(false)  // Erro das especialidades
+    const [ attrPointError, setAttrPointError ] = useState<boolean>(false)
 
     /* CHECANDO SE OS PONTOS ESTÃO CORRETOS */
     useEffect(() => {
@@ -268,16 +283,37 @@ export default function RegisterCharacter() {
             </ul> 
         </fieldset>
         <fieldset className={styles.attrFieldset}>
-            <Attributes
-                register={register}
-                inputInfos={charInputInfos}
-                attrMinValues={attrMinValues.current}
-                handleChange={handleAttrChange}
-                inputMax={attrMax}
-                defaultValue={1}
-                maxPoints={attrPoints}
-                gastos={attrSpentPoints}
-            />
+        <div className='points-info-container'>
+            <p>Pontos Gastos <PointsContainer error={attrPointError}>{attrSpentPoints}</PointsContainer></p>
+            <p>Máximo <PointsContainer>{attrPoints}</PointsContainer></p>
+        </div>
+        {/* DIV QUE CONTÉM OS ATRIBUTOS */}
+        <div className={styles.attrContainer}>
+            <h3>ATRIBUTOS</h3>
+            <ul className='generic-list'>
+                {Children.toArray(charInputInfos?.map((props) => <li>
+                    {/**
+                     * INPUT INFOS = {id: 'id', label: 'texto'}
+                     */}
+                    <label htmlFor={props.id}>{props.label}</label>
+                    <input
+                        type='number'
+                        className={'attribute'}
+                        min={attrMinValues.current[props.id]}
+                        
+                        defaultValue={1}
+                        id={props.id}
+                        {...register(`attributes.${props.id}`, {
+                            required: true,
+                            valueAsNumber: true,
+                            min: -2,
+                            onChange: e => handleAttrChange(e, attrMinValues.current[props.id]),
+                        })}
+                    />
+                </li>
+                ))}
+            </ul>
+        </div>
         </fieldset>
         <fieldset className={styles.specsFieldset}>
             <h3>Especialidades</h3>
@@ -302,6 +338,7 @@ export default function RegisterCharacter() {
             </table>
         </fieldset>
         <div className={styles.buttonContainer}>
+            <ErrorParagraph>{errorMessage}</ErrorParagraph>
             <button className={styles.submitButton} type='submit'>ENVIAR</button>
         </div>
     </form></MainContainer>

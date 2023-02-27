@@ -67,9 +67,17 @@ export type CharacterSpecialitys = {
     },
 }
 
+export type StandAttributes = {
+    strengh: number,
+    speed: number,
+    durability: number,
+    precision: number,
+    range: number,
+    development: number
+}
+
 
 export type CharacterFormValues = {
-    playerId: string,
     basic: {
         name: string,
         age: string,
@@ -97,6 +105,104 @@ export type CharacterFormValues = {
         actualXP: number
     },
 }
+export type StandFormValues = {
+    basic: {
+        name: String,
+        standType: String,
+        weakPoint: String,
+        img: String,
+    },
+    attributes: {
+        strengh: number,
+        speed: number,
+        durability: number,
+        precision: number,
+        range: number,
+        development: number
+    },
+    abilitys?: {
+        firstMain?: {
+            name: String,
+            effect: String,
+            dice: String,
+            description: String,
+        },
+        secondMain?: {
+            name: String,
+            effect: String,
+            dice: String,
+            description: String,
+        },
+        passive?: {
+            name: String,
+            effect: String,
+            dice: String,
+            description: String,
+        }
+    },
+    acts?: {
+        act1: {
+            attributes: {
+                strengh: number,
+                speed: number,
+                durability: number,
+                precision: number,
+                range: number,
+            },
+            ability: {
+                name: string,
+                effect: string,
+                dice: string,
+                description: string,
+            },
+        },
+        act2: {
+            attributes: {
+                strengh: number,
+                speed: number,
+                durability: number,
+                precision: number,
+                range: number,
+            },
+            ability: {
+                name: String,
+                effect: String,
+                dice: String,
+                description: String,
+            },
+        },
+        act3: {
+            attributes: {
+                strengh: number,
+                speed: number,
+                durability: number,
+                precision: number,
+                range: number,
+            },
+            ability: {
+                name: String,
+                effect: String,
+                dice: String,
+                description: String,
+            },
+        },
+        act4: {
+            attributes: {
+                strengh: number,
+                speed: number,
+                durability: number,
+                precision: number,
+                range: number,
+            },
+            ability: {
+                name: String,
+                effect: String,
+                dice: String,
+                description: String,
+            },
+        }
+    }
+}
 
 // export type CharSpecsKeys = {
 //     area: "strengh" | "dexterity" | "constituition" | "mentality" | "education" | "social",
@@ -123,4 +229,9 @@ export interface CharacterInputSpecProps {
     education: CharSpecsKeys[],
     mentality: CharSpecsKeys[],
     social: CharSpecsKeys[],
+}
+
+export interface StandInputInfoProps {
+    id: "strengh" | "speed" | "durability" | "range" | "precision" | "development",
+    label: string
 }
