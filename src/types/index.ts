@@ -67,16 +67,6 @@ export type CharacterSpecialitys = {
     },
 }
 
-export type StandAttributes = {
-    strengh: number,
-    speed: number,
-    durability: number,
-    precision: number,
-    range: number,
-    development: number
-}
-
-
 export type CharacterFormValues = {
     basic: {
         name: string,
@@ -105,114 +95,7 @@ export type CharacterFormValues = {
         actualXP: number
     },
 }
-export type StandFormValues = {
-    basic: {
-        name: String,
-        standType: String,
-        weakPoint: String,
-        img: String,
-    },
-    attributes: {
-        strengh: number,
-        speed: number,
-        durability: number,
-        precision: number,
-        range: number,
-        development: number
-    },
-    abilitys?: {
-        firstMain?: {
-            name: String,
-            effect: String,
-            dice: String,
-            description: String,
-        },
-        secondMain?: {
-            name: String,
-            effect: String,
-            dice: String,
-            description: String,
-        },
-        passive?: {
-            name: String,
-            effect: String,
-            dice: String,
-            description: String,
-        }
-    },
-    acts?: {
-        act1: {
-            attributes: {
-                strengh: number,
-                speed: number,
-                durability: number,
-                precision: number,
-                range: number,
-            },
-            ability: {
-                name: string,
-                effect: string,
-                dice: string,
-                description: string,
-            },
-        },
-        act2: {
-            attributes: {
-                strengh: number,
-                speed: number,
-                durability: number,
-                precision: number,
-                range: number,
-            },
-            ability: {
-                name: String,
-                effect: String,
-                dice: String,
-                description: String,
-            },
-        },
-        act3: {
-            attributes: {
-                strengh: number,
-                speed: number,
-                durability: number,
-                precision: number,
-                range: number,
-            },
-            ability: {
-                name: String,
-                effect: String,
-                dice: String,
-                description: String,
-            },
-        },
-        act4: {
-            attributes: {
-                strengh: number,
-                speed: number,
-                durability: number,
-                precision: number,
-                range: number,
-            },
-            ability: {
-                name: String,
-                effect: String,
-                dice: String,
-                description: String,
-            },
-        }
-    }
-}
 
-// export type CharSpecsKeys = {
-//     area: "strengh" | "dexterity" | "constituition" | "mentality" | "education" | "social",
-//     id: "athletics"|"jump"|"fight"|"climb"|"acrobacy"|"stealth"|"aim"|"dodge"|"reflex"|
-//     "force"|"imunity"|"painResistence"|"history"|"geography"|"math"|"investigation"|"forensic"|
-//     "tecnology"|"sociology"|"art"|"physics"|"chemistry"|"foreignLanguage"|"programming"|"policy"|
-//     "religion"|"mechanic"|"biology"|"medicine"|"perception"|"insight"|"mindResistence"|
-//     "intimidation"|"cheating"|"acting"|"charm"|"sexy"|"persuasion",
-//     label: string
-// }
 export type CharSpecsKeys = {
     area: any,
     id: any,
@@ -231,7 +114,79 @@ export interface CharacterInputSpecProps {
     social: CharSpecsKeys[],
 }
 
+
+// export type CharSpecsKeys = {
+//     area: "strengh" | "dexterity" | "constituition" | "mentality" | "education" | "social",
+//     id: "athletics"|"jump"|"fight"|"climb"|"acrobacy"|"stealth"|"aim"|"dodge"|"reflex"|
+//     "force"|"imunity"|"painResistence"|"history"|"geography"|"math"|"investigation"|"forensic"|
+//     "tecnology"|"sociology"|"art"|"physics"|"chemistry"|"foreignLanguage"|"programming"|"policy"|
+//     "religion"|"mechanic"|"biology"|"medicine"|"perception"|"insight"|"mindResistence"|
+//     "intimidation"|"cheating"|"acting"|"charm"|"sexy"|"persuasion",
+//     label: string
+// }
+
 export interface StandInputInfoProps {
     id: "strengh" | "speed" | "durability" | "range" | "precision" | "development",
     label: string
+}
+
+export interface StandAttributes {
+    strengh: number,
+    speed: number,
+    durability: number,
+    precision: number,
+    range: number,
+    development?: number
+}
+
+export interface StandAbility {
+    name: String,
+    effect: String,
+    dice: String,
+    description: String,
+}
+
+export type StandFormValues = {
+    stand: {
+        basic: {
+            name: String,
+            standType: String,
+            weakPoint: String,
+            img: String,
+        },
+        attributes?: StandAttributes,
+        abilitys?: {
+            firstMain?: StandAbility,
+            secondMain?: StandAbility,
+            passive?: StandAbility
+        },
+        acts?: {
+            act1: {
+                attributes: StandAttributes,
+                ability: StandAbility,
+            },
+            act2: {
+                attributes: StandAttributes,
+                ability: StandAbility,
+            },
+            act3: {
+                attributes: StandAttributes,
+                ability: StandAbility,
+            },
+            act4: {
+                attributes: StandAttributes,
+                ability: StandAbility,
+            }
+        }
+    },
+    substand?: {
+            basic: {
+            name: String,
+            standType: String,
+            weakPoint: String,
+            img: String,
+        },
+        attributes?: StandAttributes,
+        abilitys: StandAbility,
+    }
 }

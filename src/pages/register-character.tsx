@@ -283,37 +283,37 @@ export default function RegisterCharacter() {
             </ul> 
         </fieldset>
         <fieldset className={styles.attrFieldset}>
-        <div className='points-info-container'>
-            <p>Pontos Gastos <PointsContainer error={attrPointError}>{attrSpentPoints}</PointsContainer></p>
-            <p>Máximo <PointsContainer>{attrPoints}</PointsContainer></p>
-        </div>
-        {/* DIV QUE CONTÉM OS ATRIBUTOS */}
-        <div className={styles.attrContainer}>
-            <h3>ATRIBUTOS</h3>
-            <ul className='generic-list'>
-                {Children.toArray(charInputInfos?.map((props) => <li>
-                    {/**
-                     * INPUT INFOS = {id: 'id', label: 'texto'}
-                     */}
-                    <label htmlFor={props.id}>{props.label}</label>
-                    <input
-                        type='number'
-                        className={'attribute'}
-                        min={attrMinValues.current[props.id]}
-                        
-                        defaultValue={1}
-                        id={props.id}
-                        {...register(`attributes.${props.id}`, {
-                            required: true,
-                            valueAsNumber: true,
-                            min: -2,
-                            onChange: e => handleAttrChange(e, attrMinValues.current[props.id]),
-                        })}
-                    />
-                </li>
-                ))}
-            </ul>
-        </div>
+            <div className='points-info-container'>
+                <p>Pontos Gastos <PointsContainer error={attrPointError}>{attrSpentPoints}</PointsContainer></p>
+                <p>Máximo <PointsContainer>{attrPoints}</PointsContainer></p>
+            </div>
+            {/* DIV QUE CONTÉM OS ATRIBUTOS */}
+            <div className={styles.attrContainer}>
+                <h3>ATRIBUTOS</h3>
+                <ul className='generic-list'>
+                    {Children.toArray(charInputInfos?.map((props) => <li>
+                        {/**
+                         * INPUT INFOS = {id: 'id', label: 'texto'}
+                         */}
+                        <label htmlFor={props.id}>{props.label}</label>
+                        <input
+                            type='number'
+                            className={'attribute'}
+                            min={attrMinValues.current[props.id]}
+                            max={attrMax}
+                            defaultValue={1}
+                            id={props.id}
+                            {...register(`attributes.${props.id}`, {
+                                required: true,
+                                valueAsNumber: true,
+                                min: -2,
+                                onChange: e => handleAttrChange(e, attrMinValues.current[props.id]),
+                            })}
+                        />
+                    </li>
+                    ))}
+                </ul>
+            </div>
         </fieldset>
         <fieldset className={styles.specsFieldset}>
             <h3>Especialidades</h3>
