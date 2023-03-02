@@ -8,7 +8,7 @@
     border: 3px solid black;
     padding: 20px;
 
-    margin: 100px;
+    margin: 50px;
 
     position: relative;
 
@@ -27,12 +27,14 @@
             font-size: 2.7em;
         }
     }
+
+    ul { list-style: none; }
 }
 
 .logo {
     width: 250px;
     height: auto;
     right: -30px;
-    top: -30px;
+    top: -100px;
     position: absolute;
 }

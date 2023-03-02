@@ -27,7 +27,7 @@ export async function getStandPDAbilitys() {
 
 /* INFORMAÇÕES SECUNDÁRIAS */
 export async function getRaceMaxAttrs() {
-    const response = await AxiosService.get('/configs/racesMaxAttrs')
+    const response = await AxiosService.get('/configs/racesMaxAttr')
     return response.data
 }
 

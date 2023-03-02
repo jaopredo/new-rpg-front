@@ -23,6 +23,7 @@ import {
 import {
     getLabels,
     getRaceAdvantages,
+    getRaceMaxAttrs,
     getFightStyleAdvantages,
     defaultAttrConfigs,
 
@@ -97,6 +98,8 @@ export default function RegisterCharacter() {
         async function getData() {
             const raceAttrAdvantages = await getRaceAdvantages()
             setRaceAttrsInfos(raceAttrAdvantages)
+            attrMaxInfos.current = await getRaceMaxAttrs()
+
             const fightStyleSpecs = await getFightStyleAdvantages()
             setFightStyleSpecsInfos(fightStyleSpecs)
             
@@ -132,7 +135,8 @@ export default function RegisterCharacter() {
     /* CHECANDO SE OS PONTOS ESTÃO CORRETOS */
     useEffect(() => {
         setSpecPointError(specSpentPoints < 0)
-    }, [specSpentPoints])
+        setAttrPointError(attrSpentPoints > attrPoints)
+    }, [specSpentPoints, attrSpentPoints])
 
 
     /* FUNÇÕES DOS INPUTS */

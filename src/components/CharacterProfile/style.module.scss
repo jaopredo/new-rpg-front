@@ -1,0 +1,27 @@
+@use "../../sass/modules/mixins.scss";
+
+.profileContainer {
+    border: 2px solid black;
+    font-size: 1em;
+    text-align: center;
+    min-width: 140px;
+    min-height: 160px;
+
+    transition: transform 500ms;
+    &:hover {
+        cursor: pointer;
+        transform: scale(1.3);
+    }
+    &:active {
+        transform: scale(1.1);
+    }
+}
+
+.imgContainer {
+    font-size: 4em;
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
+}
