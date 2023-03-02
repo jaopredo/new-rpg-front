@@ -39,6 +39,26 @@
         "button button";
 }
 
+.actsFieldset {
+    @include mixins.flex($dir: column, $g: 20px);
+
+    grid-area: acts;
+}
+.act {
+    @include mixins.flex($dir: column);
+    p {
+        @include mixins.flex($dir: column);
+    }
+    & > h3 {
+        font-size: 2.1em;
+        font-weight: bolder;
+        color: white;
+        background-color: $title-bg;
+        width: 100%;
+        text-align: center;
+    }
+}
+
 
 .beneficts {
     font-size: 0.6em;

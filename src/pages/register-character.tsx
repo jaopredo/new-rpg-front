@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, Children } from 'react'
-import { getCookie } from 'cookies-next'
+import { useState, useRef, useEffect, Children, ChangeEvent, FocusEvent } from 'react'
+import { setCookie } from 'cookies-next'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Router from 'next/router'
 
@@ -121,10 +121,10 @@ export default function RegisterCharacter() {
             return
         }
 
-        await registerCharacter(data)
+        const { charId } = await registerCharacter(data)
+        setCookie('charId', charId)
         Router.push('/register-stand')
     }
-
 
     const [ specPointError, setSpecPointError ] = useState<boolean>(false)  // Erro das especialidades
     const [ attrPointError, setAttrPointError ] = useState<boolean>(false)
@@ -137,8 +137,8 @@ export default function RegisterCharacter() {
 
     /* FUNÇÕES DOS INPUTS */
     // Função que lida quando o atributo muda
-    const handleAttrChange = function(e: any, minValue: number) {
-        e.target.value = e.target.value>attrMax?attrMax:e.target.value<minValue?minValue:e.target.value
+    const handleAttrChange = function(e: ChangeEvent<HTMLInputElement>, minValue: number) {
+        e.target.value = Number(e.target.value)>attrMax?attrMax.toString():Number(e.target.value)<minValue?minValue.toString():e.target.value
         
         const { value, id }: HTMLInputElement = e.target;
         setAttrSpentPoints(attrSpentPoints - (actualAttrValues.current?.[id] - Number(value)))
@@ -153,8 +153,8 @@ export default function RegisterCharacter() {
 
 
     // Função que lida quando a raça muda
-    const [ lastRace, setLastRace ] = useState<"human" | "animal" | "rockman" | "vampire">();
-    const handleRaceChange = (e: any) => {
+    const [ lastRace, setLastRace ] = useState<"human" | "animal" | "rockman" | "vampire">()
+    const handleRaceChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value: race } = e.target
         setRaceAdvantages(raceAdvantages.current?.[race])  // Muda o texto das vantagens
         setAttrMax(attrMaxInfos.current?.[race])  // Muda até qual valor pode ser colocado
@@ -197,7 +197,7 @@ export default function RegisterCharacter() {
     }
 
     // Função que lida com a mudança do estilo de luta
-    const [ lastFightStyle, setLastFightStyle ] = useState();
+    const [ lastFightStyle, setLastFightStyle ] = useState<string>();
 
     function removeFightStyleSpecs(fs: string /* FIGHT STYLE */) {
         fightStyleSpecsInfos[fs]?.forEach(spec => {
@@ -254,7 +254,7 @@ export default function RegisterCharacter() {
                     <select id='fightStyle' {...register('basic.fightStyle', { 
                         required: true,
                         onChange: handleFightStyleChange,
-                    })} onFocus={e => {
+                    })} onFocus={(e: FocusEvent<HTMLSelectElement>) => {
                         setLastFightStyle(e.target.value)
                         e.target.blur()
                     }}>
@@ -279,6 +279,10 @@ export default function RegisterCharacter() {
                 <li>
                     <label htmlFor='occupation'>Profissão: </label>
                     <input id='occupation' type="text" {...register('basic.occupation', { required: true })}/>
+                </li>
+                <li>
+                    <label htmlFor="char-img">Link da Imagem: </label>
+                    <input id="char-img" type="text" {...register('img')} />
                 </li>
             </ul> 
         </fieldset>

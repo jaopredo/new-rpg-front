@@ -68,6 +68,7 @@ export type CharacterSpecialitys = {
 }
 
 export type CharacterFormValues = {
+    img: string,
     basic: {
         name: string,
         age: string,
@@ -148,11 +149,12 @@ export interface StandAbility {
 
 export type StandFormValues = {
     stand: {
+        img: string,
         basic: {
             name: String,
             standType: String,
             weakPoint: String,
-            img: String,
+            img: string,
         },
         attributes?: StandAttributes,
         abilitys?: {
@@ -162,29 +164,34 @@ export type StandFormValues = {
         },
         acts?: {
             act1: {
+                img: string,
                 attributes: StandAttributes,
                 ability: StandAbility,
             },
             act2: {
+                img: string,
                 attributes: StandAttributes,
                 ability: StandAbility,
             },
             act3: {
+                img: string,
                 attributes: StandAttributes,
                 ability: StandAbility,
             },
             act4: {
+                img: string,
                 attributes: StandAttributes,
                 ability: StandAbility,
             }
         }
     },
     substand?: {
-            basic: {
-            name: String,
-            standType: String,
-            weakPoint: String,
-            img: String,
+        img: string,
+        basic: {
+            name: string,
+            standType: string,
+            weakPoint: string,
+            img: string,
         },
         attributes?: StandAttributes,
         abilitys: StandAbility,

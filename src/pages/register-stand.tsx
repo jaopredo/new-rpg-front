@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, Children, ChangeEvent } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { getCookie } from 'cookies-next'
+import Router from 'next/router'
 
 import styles from '@/sass/Sheet.module.scss'
 
@@ -7,6 +9,7 @@ import styles from '@/sass/Sheet.module.scss'
 import MainContainer from '@/components/MainContainer'
 import PointsContainer from '@/components/PointsContainer'
 import Ability from '@/components/Ability'
+import ErrorParagraph from '@/components/ErrorParagraph'
 
 /* CONFIGS */
 import {
@@ -15,6 +18,11 @@ import {
 
     defaultAttrConfigs
 } from '@/api/config'
+
+/* API */
+import { 
+    registerStand, registerSubstand
+} from '@/api/stand'
 
 /* TYPES */
 import {
@@ -27,7 +35,14 @@ import {
 
 
 interface StandFormsProps {
-    register: Function
+    register: Function,
+    maxPoints?: number,
+    maxActPoints?: {
+        act1: number;
+        act2: number;
+        act3: number;
+        act4: number;
+    },
 }
 
 function SubStand({ register }: StandFormsProps) {
@@ -44,21 +59,29 @@ function SubStand({ register }: StandFormsProps) {
         }
         getData()
     }, [])
+    useEffect(() => {
+        setSubStandSpentPointsError(subStandPoints < subStandSpentPoints)
+    }, [ subStandSpentPoints ])
 
-    const handleAttrChange = (e: ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value)
+    const actualAttrValues = useRef<StandAttributes>(defaultAttrConfigs().stand)
+    function changeActualValue(value: number, id: string) {
+        actualAttrValues.current = {
+            ...actualAttrValues.current,
+            [id]: value,
+        };
     }
 
-    // const subStandPoints = 14;  // Máximo de pontos de um substand
-    // const [ subStandSpentPoints, setSubStandSpentPoints ] = useState(0);  // Pontos gastos no substand
+    
+    const handleAttrChange = function(e: ChangeEvent<HTMLInputElement>) {
+        e.target.value = e.target.value>"5"?"5":e.target.value<"0"?"0":e.target.value
+        const { id } = e.target
+        const value = Number(e.target.value)
 
-    // const actStandPoints = {  // Pontos de cada ato
-    //     act1: 10,
-    //     act2: 13,
-    //     act3: 15,
-    //     act4: 18
-    // }
-    // const [ actStandSpentPoints, setActStandSpentPoints ] = useState(defaultAttrConfigs().acts)
+        // Checando se aumentou ou diminuiu
+        setSubStandSpentPoints(subStandSpentPoints - (actualAttrValues.current[id] - Number(value)))
+
+        changeActualValue(Number(value), id)
+    }
 
 
     return <fieldset className={styles.substandFieldset}>
@@ -242,22 +265,215 @@ function NormalStand({ register }: StandFormsProps) {
     </>
 }
 
+interface ActProps {
+    register: Function,
+    num: number,
+    maxPoints: {
+        act1: number,
+        act2: number,
+        act3: number,
+        act4: number
+    },
+    actStandSpentPoints: {
+        act1: number,
+        act2: number,
+        act3: number,
+        act4: number
+    },
+    setActStandSpentPoints: Function
+}
 
-function ActStand() {
+function Act({ register, num, maxPoints, actStandSpentPoints, setActStandSpentPoints }: ActProps) {
+    let atoAtual: "act1" | "act2" | "act3" | "act4" = `act${num}`
 
+    const [ actInputInfos, setActInputInfos ] = useState<StandInputInfoProps[]>([])
+
+    useEffect(() => {
+        async function getData() {
+            setActInputInfos(await getStandAttributes())
+        }
+        getData()
+    }, [])
+
+    const actualValues = useRef<StandAttributes>(defaultAttrConfigs().stand)
+    function changeActualValue(id: string, value: number) {
+        actualValues.current[id] = value
+    }
+
+    // Colocar erro no span
+    const [ actPointsError, setActPointsError ] = useState(false)
+
+    useEffect(() => {
+        setActPointsError(actStandSpentPoints[atoAtual] > maxPoints[atoAtual])
+    }, [ actStandSpentPoints ])
+
+    function handleAttrChange(e: ChangeEvent<HTMLInputElement>) {
+        e.target.value = e.target.value>5?5:e.target.value<0?0:e.target.value
+        const { id } = e.target;
+        const value = Number(e.target.value)
+
+        setActStandSpentPoints({
+            ...actStandSpentPoints,
+            [atoAtual]: actStandSpentPoints[atoAtual] - (actualValues.current[id] - value)
+        })
+
+        changeActualValue(id, value)
+    }
+
+    return <div className={styles.act}>
+        <h3>Ato {num}</h3>
+        <div>
+            <label htmlFor={`${atoAtual}-img`}>Link da Imagem: </label>
+            <input type="text" id={`${atoAtual}-img`} {...register(`stand.acts.${atoAtual}.img`)} />
+        </div>
+        <fieldset>
+            <p>Pontos gastos: <PointsContainer error={actPointsError}>{actStandSpentPoints[atoAtual]}</PointsContainer></p>
+            <p>Máximo: <PointsContainer>{maxPoints[atoAtual]}</PointsContainer></p>
+            <div className={styles.attrContainer}>
+                <h3>ATRIBUTOS</h3>
+                <ul>
+                    {Children.toArray(actInputInfos.map(
+                        props => props.id != "development" && <li>
+                            <label htmlFor={props.id}>{props.label}</label>
+                            <input
+                                type="number"
+                                min={0}
+                                max={5}
+                                defaultValue={0}
+                                id={props.id}
+                                {...register(`stand.acts.${atoAtual}.attributes.${props.id}`, {
+                                    required: true,
+                                    valueAsNumber: true,
+                                    max: 5,
+                                    min: 0,
+                                    onChange: handleAttrChange,
+                                })}
+                            />
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </fieldset>
+        <Ability
+            register={register}
+            abName={`stand.acts.${atoAtual}.ability`}
+            title='Habilidade'
+        />
+    </div>
+}
+function ActStand({ register, maxActPoints }: StandFormsProps) {
+    const [ actStandSpentPoints, setActStandSpentPoints ] = useState<{
+        act1: number,
+        act2: number,
+        act3: number,
+        act4: number
+    }>({
+        act1: 0,
+        act2: 0,
+        act3: 0,
+        act4: 0
+    })
+
+    return <fieldset className={styles.actsFieldset}>
+        { Children.toArray([1, 2, 3, 4].map(actNum =>
+            <Act
+                register={register}
+                num={actNum}
+                maxPoints={maxActPoints}
+                actStandSpentPoints={actStandSpentPoints}
+                setActStandSpentPoints={setActStandSpentPoints}
+            />
+        )) }
+    </fieldset>
 }
 
 
 const RegisterStand: React.FC = () => {
+    const substandMaxPoints = 14
+    const standMaxPoints = 20
+    const actStandMaxPoints = {
+        act1: 10,
+        act2: 13,
+        act3: 15,
+        act4: 18
+    }
+
+    const [ errorMessage, setErrorMessage ] = useState<string>("")
+
     const [ isActStand, setIsActStand ] = useState<boolean>(false)
 
     const { register, handleSubmit } = useForm<StandFormValues>()
 
-    const onSubmit: SubmitHandler<StandFormValues> = data => {
-        console.log(data)
+    const onSubmit: SubmitHandler<StandFormValues> = async(data) => {
+        const newData = { ...data }
+        const charId = getCookie('charId')
+
+        // Limpando as informações desnecessárias e analisando os pontos
+        if (newData.stand.basic.standType == "act") {
+            newData.stand.abilitys = undefined
+            newData.stand.attributes = undefined
+            newData.substand = undefined
+
+            let somatorio = 0
+            let error = false
+            Object.keys(newData.stand.acts ?? []).forEach(act => {
+                for (let num of Object.values(newData.stand.acts?.[act].attributes)) {
+                    somatorio += num
+                }
+                if (somatorio > actStandMaxPoints[act] || somatorio < actStandMaxPoints[act]) {
+                    error = true
+                    return
+                }
+            })
+
+            if (error) {
+                setErrorMessage("Erro nos atributos dos ATOS")
+                return
+            }
+        } else {
+            newData.stand.acts = undefined
+
+            // Somando atributos do stand
+            let somatorio = 0
+            Object.values(newData.stand.attributes ?? []).forEach((attr: number) => {
+                somatorio += attr
+            })
+
+            if (somatorio > standMaxPoints || somatorio < standMaxPoints) {
+                setErrorMessage("Erro no somatório dos pontos dos atributos do stand!")
+                return
+            }
+
+            somatorio = 0
+            Object.values(newData.substand?.attributes ?? []).forEach((attr: number) => {
+                somatorio += attr
+            })
+
+            if (somatorio > substandMaxPoints || somatorio < substandMaxPoints) {
+                setErrorMessage("Erro no somatório dos pontos dos atributos do substand!")
+                return
+            }
+        }
+
+        const { standId } = await registerStand({
+            charId,
+            ...newData.stand
+        })
+        if (!!newData.substand) {
+            await registerSubstand({
+                standId,
+                ...newData.substand
+            })
+        }
+
+        Router.push('/logged')
     }
 
-    return <MainContainer><form onSubmit={handleSubmit(onSubmit)} className={styles.standRegister}>
+    const handleChangeType = (e: ChangeEvent<HTMLInputElement>) => {
+        setIsActStand(e.target.value === "act")
+    }
+
+    return <MainContainer><form onSubmit={handleSubmit(onSubmit)} className={isActStand?styles.actStandRegister:styles.standRegister}>
         <fieldset className={styles.basicFieldset}>
             <ul>
                 <li>
@@ -265,7 +481,7 @@ const RegisterStand: React.FC = () => {
                 </li>
                 <li>
                     <label htmlFor='standType'>Tipo: </label>
-                    <select id='standType' {...register('stand.basic.standType', { required: true })}>
+                    <select id='standType' {...register('stand.basic.standType', { required: true, onChange: handleChangeType })}>
                         <option defaultChecked value="short-range">Curto Alcance</option>
                         <option value="long-range">Longo Alcance</option>
                         <option value="automatic">Automático</option>
@@ -285,9 +501,11 @@ const RegisterStand: React.FC = () => {
                 </li>
             </ul>
         </fieldset>
-        {!isActStand && <NormalStand register={register}/>}
+        {!isActStand && <NormalStand register={register} maxPoints={standMaxPoints}/>}
+        {isActStand && <ActStand register={register} maxActPoints={actStandMaxPoints}/>}
         <div className={styles.buttonContainer}>
-            <button>ENVIAR</button>
+            <ErrorParagraph>{errorMessage}</ErrorParagraph>
+            <button type="submit">ENVIAR</button>
         </div>
     </form></MainContainer>
 }
