@@ -96,6 +96,93 @@ export type CharacterFormValues = {
         actualXP: number
     },
 }
+export const CharacterDefaultValues = {
+    img: "",
+    basic: {
+        name: "",
+        age: "",
+        race: "",
+        fightStyle: "",
+        occupation: "",
+    },
+    attributes: {
+        strengh: 0,
+        dexterity: 0,
+        constituition: 0,
+        education: 0,
+        mentality: 0,
+        social: 0,
+    },
+    specialitys: {
+        strengh: {
+            athletics: false,
+            jump: false,
+            fight: false,
+            climb: false
+        },
+        dexterity: {
+            acrobacy: false,
+            stealth: false,
+            aim: false,
+            dodge: false,
+            reflex: false,
+        },
+        constituition: {
+            force: false,
+            imunity: false,
+            painResistence: false
+        },
+        education: {
+            history: false,
+            geography: false,
+            math: false,
+            investigation: false,
+            forensic: false,
+            tecnology: false,
+            sociology: false,
+            art: false,
+            physics: false,
+            chemistry: false,
+            foreignLanguage: false,
+            programming: false,
+            policy: false,
+            religion: false,
+            mechanic: false,
+            biology: false,
+            medicine: false,
+        },
+        mentality: {
+            perception: false,
+            insight: false,
+            mindResistence: false
+        },
+        social: {
+            intimidation: false,
+            cheating: false,
+            acting: false,
+            charm: false,
+            sexy: false,
+            persuasion: false,
+        }
+    },
+    combat: {
+        life: 0,
+        actualLife: 0,
+        mentalEnergy: 0,
+        actualMentalEnergy: 0,
+        movement: 0,
+        da: 0,
+    },
+    abilitys: {
+        race: [],
+        fightStyle: [],
+    },
+    level: {
+        actualLevel: 0,
+        maxXP: 0,
+        actualXP: 0
+    },
+}
 
 export type CharSpecsKeys = {
     area: any,

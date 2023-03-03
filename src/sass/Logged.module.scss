@@ -17,4 +17,5 @@
 
 .profilesList {
     @include mixins.flex($g: 30px);
+    min-height: 100%;
 }

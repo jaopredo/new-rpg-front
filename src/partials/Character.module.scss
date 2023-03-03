@@ -1,0 +1,167 @@
+@use "../sass/modules/mixins.scss";
+@use "../sass/modules/colors.scss" as *;
+
+.advantagesList {
+    font-size: 1.7em;
+    font-weight: bold;
+    margin-bottom: 40px;
+    
+    li {
+        @include mixins.flex($jc: space-between);
+        margin-bottom: 10px;
+    }
+
+    input {
+        width: 30%;
+        text-align: center;
+        border: 1px solid black;
+        font-weight: bold;
+    }
+    #vantagens {
+        color: $advantage;
+    }
+    #desvantagens {
+        color: $disadvantage;
+    }
+}
+
+/* STATUS */
+.statusArea {
+    grid-area: status;
+    @include mixins.flex($dir: column);
+    gap: 12px;
+}
+
+/* DEFESA */
+.defendArea {
+    grid-area: defesa;
+
+    input[type="checkbox"] {
+        accent-color: #535353;
+        color: white;
+    }
+}
+.defendContainer {
+    @include mixins.flex(space-around);
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.caArea div, .shieldArea {
+    @include mixins.flex(space-between);
+    gap: 10px;
+}
+
+
+.levelArea {
+    grid-area: nivel;
+
+    button:disabled {
+        transform: none;
+        background: rgba(155, 155, 155, 0.788);
+    }
+}
+.levelSpanContainer {
+    @include mixins.flex($dir: column);
+    width: 100%;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.levelContainer {
+    position: relative;
+    width: 90%;
+}
+
+.levelXp {
+    @include mixins.flex();
+    position: absolute;
+    top: 0;
+    height: 30px;
+    width: 90%;
+    color: white;
+    text-shadow: 3px 3px 3px #0000003b;
+
+    input {
+        width: 30%;
+        text-align: center;
+        font-size: 1.05em;
+        color: white;
+        text-shadow: 3px 3px 3px #0000003b;
+    }
+}
+.actualLevel {
+    background-color: #00000000;
+}
+
+/* REAÇÕES */
+.reactionsArea {
+    grid-area: reacoes;
+
+    .reactions-container {
+        @include mixins.flex($dir: column);
+        gap: 8px;
+        margin-top: 10px;
+    }
+}
+
+.dicesArea {
+    grid-area: dados;
+
+    img {
+        display: block;
+        margin: auto;
+    }
+}
+
+.mentalButtons {
+    @include mixins.flex();
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+
+    button {
+        font-size: 10pt;
+        width: 100%;
+    }
+}
+
+.healthArea {
+    grid-area: saude;
+}
+
+.healthContainer {
+    @include mixins.flex();
+    position: relative;
+
+    p {
+        @include mixins.flex();
+        width: 100%;
+        top: 0;
+        position: absolute;
+        color: white;
+        font-size: 1.2em;
+        font-weight: bolder;
+        text-shadow: 3px 3px 3px #0000003a;
+    }
+    input {
+        width: 20%;
+        text-align: center;
+        background-color: #00000000;
+        color: white;
+        border: none;
+        font-size: 1.2em;
+        text-shadow: 3px 3px 3px #0000003a;
+    }
+}
+
+/* MOVIMENTO */
+.movimentArea {
+    grid-area: movimento;
+    p.char-move {
+        @include mixins.flex($jc: flex-start, $dir: column);
+        height: 100%;
+        font-weight: bold;
+        font-size: 4vw;
+    }
+}

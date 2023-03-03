@@ -22,15 +22,15 @@ const Logged = () => {
     }, [])
 
     const handleProfileClick = () => {
-        
+        Router.push('/playing')
     }
 
     return <MainContainer>
         <ul className={styles.profilesList}>
             {Children.toArray(charList?.map((id: string) => <CharacterProfile id={id} onClick={handleProfileClick}/>))}
+            <AiOutlineUserAdd onClick={() => Router.push('/register-character')} className={styles.addIcon} />
         </ul>
-        <AiOutlineUserAdd onClick={() => Router.push('/register-character')} className={styles.addIcon} />
-    </MainContainer>;
+    </MainContainer>
 }
 
 export default Logged;

@@ -1,25 +1,20 @@
 import AxiosService from "."
-import { getCookie } from 'cookies-next'
 
 import { CharacterFormValues } from "../types"
 
-function returnHeader() {
-    return {
-        authorization: `JOJO ${getCookie('token')}`
-    }
-}
+import { returnAuthHeader } from "src/func"
 
 export async function registerCharacter(data: CharacterFormValues) {
-    const response = await AxiosService.post('/character', data, { headers: returnHeader() })
+    const response = await AxiosService.post('/character', data, { headers: returnAuthHeader() })
     return response.data
 }
 
 export async function deleteCharacter(id: String) {
-    const response = await AxiosService.delete(`/character?id=${id}`, { headers: returnHeader() })
+    const response = await AxiosService.delete(`/character?id=${id}`, { headers: returnAuthHeader() })
     return response.data
 }
 
 export async function getCharacter(id: String = "") {
-    const response = await AxiosService.get(`/character${id && `?id=${id}`}`, { headers: returnHeader() })
+    const response = await AxiosService.get(`/character${id && `?id=${id}`}`, { headers: returnAuthHeader() })
     return response.data
 }

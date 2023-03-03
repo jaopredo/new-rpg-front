@@ -1,11 +1,13 @@
 import { MouseEventHandler, useEffect, useState } from 'react'
+import { setCookie } from 'cookies-next'
 import Image from 'next/image'
-import { BsFillPersonFill } from 'react-icons/bs'
+import { BsFillPersonFill, BsFillTrashFill } from 'react-icons/bs'
+import Router from 'next/router'
 
 import styles from './style.module.scss'
 
 /* API */
-import { getCharacter } from '@/api/character'
+import { getCharacter, deleteCharacter } from '@/api/character'
 
 /* TYPES */
 import { CharacterFormValues } from '@/types/*'
@@ -24,12 +26,21 @@ const CharacterProfile = ({ id, onClick }: CharProfileProps) => {
         getData()
     }, [])
 
-    return <div onClick={onClick} className={styles.profileContainer}>
+    return <div className={styles.profileContainer}>
         <div className={styles.imgContainer}>
-            { charInfos?.img && <Image width={100} height={100} src={"https://static.wikia.nocookie.net/batman/images/4/43/JGordon.png/revision/latest?cb=20150504184255&path-prefix=pt-br"} alt="Foto do personagem" /> }
+            <BsFillTrashFill className={styles.trashIcon} onClick={() => {
+                deleteCharacter(id)
+                Router.reload()
+            }}/>
+            { charInfos?.img && <Image width={100} height={100} src={charInfos?.img} alt="" /> }
             { !charInfos?.img && <BsFillPersonFill/> }
         </div>
-        <h2>{charInfos?.basic?.name}</h2>
+        <div onClick={(e) => {
+            setCookie("charId", id)
+            onClick(e)
+        }}>
+            <h2>{charInfos?.basic?.name}</h2>
+        </div>
     </div>
 }
 

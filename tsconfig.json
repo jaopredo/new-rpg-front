@@ -20,7 +20,9 @@
       "@/sass/*": ["./src/sass/*"],
       "@/types/*": ["./src/types/index.ts"],
       "@/images/*": ["./src/images/*"],
-      "@/api/*": ["./src/api/*"]
+      "@/api/*": ["./src/api/*"],
+      "@/partials/*": ["./src/partials/*"],
+      "@/func/*": ["./src/func/index.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
