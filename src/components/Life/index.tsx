@@ -2,7 +2,6 @@ import { useRef, useEffect, ChangeEvent, useState, KeyboardEvent } from 'react'
 import styled from 'styled-components'
 
 import charStyles from '@/partials/Character.module.scss'
-import styles from './style.module.scss'
 
 interface LifeProps {
     maxLife: number,
@@ -25,53 +24,52 @@ const ActualLifeContainer = styled.div`
 `;
 
 const Life = ({ maxLife, actualLife }: LifeProps) => {
-    const actualLifeContainerRef = useRef()
+    const actualLifeContainerRef = useRef<HTMLDivElement>()
     const lifeInputRef = useRef()
 
     const [ actualLifeState, setActualLifeState ] = useState<number>(actualLife)
 
     useEffect(() => {
-        let percentage;
+        let percentage
         // Área da vida
-        if (actualLife && lifeInputRef.current) lifeInputRef.current.value = actualLife;
-        percentage = (actualLife/maxLife) * 100;
-        percentage = percentage<0?0:percentage>100?100:percentage;
-        document.getElementById('actual-life').style.width = `${percentage}%`;
-    }, [])
+        percentage = (actualLifeState/maxLife) * 100
+        percentage = percentage<0?0:percentage>100?100:percentage
+        
+        if (actualLifeContainerRef.current) actualLifeContainerRef.current.style.width = `${percentage}%`
+    }, [ actualLifeState ])
 
-    const handleHealthKeyDown = (e: KeyboardEvent<HTMLInputElement>, action: string) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         const { value } = e.currentTarget;
         if (e.key === 'Enter') {
             if (!Number(value)) return;
             if (value[0] === '+' || value[0] === '-') {
-                if (action === 'life') setActualLifeState(actualLifeState + Number(value));
-                // if (action === 'mental-energy') setActualMentalEnergy(actualMentalEnergy + Number(value));
-                return;
+                setActualLifeState(actualLifeState + Number(value))
+                e.currentTarget.value = (actualLifeState + Number(value)).toString()
+                return
             }
-            if (action === 'life') setActualLifeState(Number(value));
-            // if (action === 'mental-energy') setActualMentalEnergy(Number(value));
-            return;
+            setActualLifeState(Number(value))
+            return
         }
         if (e.key === 'ArrowUp') {
-            if (action === 'life') setActualLifeState(actualLifeState+1);
-            // if (action === 'mental-energy') setActualMentalEnergy(actualMentalEnergy+1);
+            setActualLifeState(actualLifeState + 1)
+            e.currentTarget.value = (actualLifeState + 1).toString()
         }
         if (e.key === 'ArrowDown') {
-            if (action === 'life') setActualLifeState(actualLifeState-1);
-            // if (action === 'mental-energy') setActualMentalEnergy(actualMentalEnergy-1);
+            setActualLifeState(actualLifeState - 1)
+            e.currentTarget.value = (actualLifeState - 1).toString()
         }
     }
 
-    return <div className={styles.life}>
+    return <div>
         <h3>VIDA</h3>
         <div className={charStyles.healthContainer}>
             <MaxLife/>
-            <ActualLifeContainer ref={actualLifeContainerRef} id='actual-life'/>
+            <ActualLifeContainer ref={actualLifeContainerRef}/>
             <p>
                 <input
                     type="text"
                     defaultValue={actualLifeState}
-                    onKeyUp={handleHealthKeyDown}
+                    onKeyUp={handleKeyDown}
                     ref={lifeInputRef}
                     onBlur={(e: ChangeEvent<HTMLInputElement>) => e.target.value = actualLifeState.toString()}
                 />  / {maxLife}
@@ -80,4 +78,4 @@ const Life = ({ maxLife, actualLife }: LifeProps) => {
 </div>
 }
 
-export default Life;
+export default Life

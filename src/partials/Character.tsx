@@ -1,8 +1,12 @@
-import { Children, useRef, useEffect, ChangeEvent } from 'react'
+import { Children, useRef, useEffect } from 'react'
 import { GoVerified } from 'react-icons/go'
+import Image from 'next/image'
 
 import charStyles from './Character.module.scss'
 import sheetStyles from '@/sass/Sheet.module.scss'
+
+/* IMAGES */
+import RpgDices from '@/images/dice-vector.png'
 
 /* API */
 import { getCharSpecialitys } from '@/api/config'
@@ -10,23 +14,26 @@ import { getCharSpecialitys } from '@/api/config'
 /* COMPONENTS */
 import { CharContainer } from '@/components/Containers'
 import Life from '@/components/Life'
+import MentalEnergy from '@/components/MentalEnergy'
+import Level from '@/components/Level'
 
 /* TYPES */
 import { CharacterFormValues } from '@/types/';
 
-const Character = ({ basic, attributes, specialitys, combat }: CharacterFormValues) => {
+const Character = ({ basic, attributes, specialitys, combat, level }: CharacterFormValues) => {
     const specInfos = useRef()
 
     useEffect(() => {
         async function getData() {
             specInfos.current = await getCharSpecialitys()
         }
+        console.log(combat)
         getData()
     }, [])
 
     return <CharContainer>
         <div className={sheetStyles.basicArea}>
-            <h1>{basic?.name}</h1>
+            <h1 className={sheetStyles.name}>{basic?.name}</h1>
             <ul className={sheetStyles.infosContainer}>
                 <li>Raça: <strong>{basic?.race}</strong></li>
                 <li>Idade: <strong>{basic?.age}</strong></li>
@@ -88,44 +95,76 @@ const Character = ({ basic, attributes, specialitys, combat }: CharacterFormValu
         </div>
         <div className={charStyles.healthArea}>
             <h2>Saúde</h2>
-            <Life
-                actualLife={combat.actualLife}
-                maxLife={combat.life}
-            />
-            {/* <div id="mental-energy">
-                <h3>ENERGIA MENTAL</h3>
-                <div className='health-container'>
-                    <MaxXp/>
-                    <ActualMentalEnergyContainer id='actual-mental-energy'/>
-                    <p>
-                        <input
-                            type="text"
-                            defaultValue={actualMentalEnergy}
-                            onKeyUp={e => handleHealthKeyDown(e, 'mental-energy')}
-                            ref={mentalEnergyInputRef}
-                            onBlur={e => e.target.value = actualMentalEnergy}
-                            maxLength={3}
-                        /> / {charState.combat?.mentalEnergy}
-                    </p>
-                    <ul className='generic-list mental-buttons'>
-                        <li><button className='roll-button' onClick={() =>
-                            setActualMentalEnergy(actualMentalEnergy - (standResistence + 1))
-                        }>STAND</button></li>
-                        <li><button className='roll-button' onClick={() =>
-                            setActualMentalEnergy(actualMentalEnergy - 20)
-                        }>PRINCIPAL</button></li>
-                        <li><button className='roll-button' onClick={() => 
-                            setActualMentalEnergy(actualMentalEnergy - 15)
-                        }>SECUNDÁRIA</button></li>
-                        { subStandResistence && <li><button className='roll-button' onClick={() =>
-                            setActualMentalEnergy(actualMentalEnergy - (subStandResistence + 1))
-                        }>SUB-STAND</button></li> }
-                        <li><button className='roll-button' onClick={() =>
-                            setActualMentalEnergy(charState.combat?.mentalEnergy)
-                        }>REGENERAR</button></li>
-                    </ul>
+            {combat.actualLife && <Life
+                actualLife={combat?.actualLife}
+                maxLife={combat?.life}
+            />}
+            {combat.actualMentalEnergy && <MentalEnergy
+                actualMentalEnergy={combat?.actualMentalEnergy}
+                maxMentalEnergy={combat?.mentalEnergy}
+            />}
+        </div>
+        <div className={charStyles.movimentArea}>
+            <h2>Mov.</h2>
+            <p className={charStyles.charMove}>{combat.movement}m</p>
+        </div>
+        <div className={charStyles.defendArea}>
+            <h2>Defesa</h2>
+            <div className={charStyles.defendContainer}>
+                <div className={charStyles.caArea}>
+                    <div>DA<span className={sheetStyles.spanContainer}>{ combat?.da }</span></div>
                 </div>
-            </div>*/}
+                <div className={charStyles.shieldArea}>
+                    <label htmlFor="shield">ARMADURA</label><input
+                        className={sheetStyles.spanContainer}
+                        type='number'
+                        defaultValue={0}
+                    />
+                </div>
+            </div>
+        </div>
+        <div className={charStyles.reactionsArea}>
+            <h2>Reações</h2>
+            <div className={charStyles.reactionsContainer}>
+                <button type="button" className={charStyles.rollButton} onClick={e => {
+                    // setRolling(true)
+                    // setRollingText('CONTRA-ATAQUE')
+                    // setRollConfigs({
+                    //     faces: 20,
+                    //     times: 1,
+                    //     bonus: Math.floor(Number(charState.attributes.strengh) / 2) + (!!charState.specialitys.strengh.fight && 5),
+                    //     advantage: true,
+                    // })
+                }}>CONTRA-ATAQUE</button>
+                <button type="button" className={charStyles.rollButton} onClick={e => {
+                    // setRolling(true)
+                    // setRollingText('SOCO')
+                    // setRollConfigs({
+                    //     faces: charState.basic?.fightStyle==='fighter'?6:4,
+                    //     times: 1,
+                    //     bonus: Math.floor(
+                    //         Number(charState.attributes.strengh) / (charState.basic?.fightStyle==='figher'?1:2)
+                    //     )
+                    // })
+                }}>SOCO</button>
+            </div>
+        </div>
+        <div className={charStyles.levelArea}>
+            <h2>Level</h2>
+            {level.actualLevel && <Level {...level} />}
+        </div>
+        <div className={charStyles.dicesArea}>
+            <h2>Dados</h2>
+            <Image src={RpgDices} alt="imagens dos dados" useMap='#rpg-dices' />
+            <map name="rpg-dices">
+                <area alt="1d100" title="1d100" href="#dices-area" coords="42,44,25" shape="circle"/>
+                <area alt="1d10" title="1d10" href="#dices-area" coords="101,43,24" shape="circle"/>
+                <area alt="1d12" title="1d12" href="#dices-area" coords="160,41,29" shape="circle"/>
+                <area alt="1d20" title="1d20" href="#dices-area" coords="228,39,24" shape="circle"/>
+                <area alt="1d4" title="1d4" href="#dices-area" coords="65,104,24" shape="circle"/>
+                <area alt="1d6" title="1d6" href="#dices-area" coords="143,106,23" shape="circle"/>
+                <area alt="1d8" title="1d8" href="#dices-area" coords="212,106,21" shape="circle"/>
+            </map>
         </div>
     </CharContainer>
 }

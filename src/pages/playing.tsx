@@ -26,12 +26,12 @@ const Playing = () => {
     const [ showing, setShowing ] = useState<"char" | "stand" | "inventory">("char")
 
     const [ charInfos, setCharInfos ] = useState<CharacterFormValues>(CharacterDefaultValues)
-    const [ standInfos, setStandInfos ] = useState()
+    // const [ standInfos, setStandInfos ] = useState()
 
     useEffect(() => {
         async function getData() {
             setCharInfos(await getCharacter(charId))
-            setStandInfos(await getStand(charId))
+            // setStandInfos(await getStand(charId))
         }
         getData()
     }, [])
@@ -48,4 +48,4 @@ const Playing = () => {
     </MainContainer>
 }
 
-export default Playing;
+export default Playing

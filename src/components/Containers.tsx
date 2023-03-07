@@ -14,4 +14,12 @@ export const CharContainer = styled.div`
     font-family: Arial, Helvetica, sans-serif;
     width: 100%;
     height: 100%;
+
+    h2 {
+        background: #2b2b2b;
+        color: white;
+        text-align: center;
+        width: 100%;
+        padding: 5px;
+    }
 `
