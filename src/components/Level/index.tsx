@@ -3,6 +3,9 @@ import styled from "styled-components"
 
 import style from './style.module.scss'
 
+/* API */
+import { getMaxLevel } from '@/api/config'
+/* COMPONENTS */
 interface LevelProps {
     actualLevel: number,
     maxXP: number,
@@ -52,6 +55,11 @@ const Level = ({ actualLevel, maxXP, actualXP }: LevelProps) => {
     const [ actualXPState, setActualXPState ] = useState<number>(actualXP)
 
     useEffect(() => {
+        async function getData() {
+            setOnMaxLevel(actualLevel == await getMaxLevel())
+        }
+        getData()
+
         setCanLevelUp(maxXP <= actualXPState)
 
         let percentage
@@ -103,11 +111,11 @@ const Level = ({ actualLevel, maxXP, actualXP }: LevelProps) => {
                 </>}
             </div>
         </div>
-        {/* { !onMaxLevel && <button
+        { !onMaxLevel && <button
             type='button'
-            className='roll-button'
-            onClick={()=>setShowUpForm(true)}
-        >EVOLUIR</button> } */}
+            disabled={!canLevelUp}
+            // onClick={()=>setShowUpForm(true)}
+        >EVOLUIR</button> }
     </div>
 }
 
