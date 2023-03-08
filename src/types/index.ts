@@ -284,3 +284,12 @@ export type StandFormValues = {
         abilitys: StandAbility,
     }
 }
+
+
+export interface RollConfigsProps {
+    faces: number,
+    times: number,
+    bonus?: number,
+    advantage?: boolean,
+    disadvantage?: boolean
+}

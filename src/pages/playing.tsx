@@ -12,16 +12,32 @@ import { getCharacter } from '@/api/character'
 import { getStand } from '@/api/stand'
 
 /* TYPES */
-import { CharacterFormValues, CharacterDefaultValues } from '../types'
+import { CharacterFormValues, CharacterDefaultValues, RollConfigsProps } from '../types'
 
 /* PARTIALS */
 import Character from '@/partials/Character'
 import Stand from '@/partials/Stand'
 import Inventory from '@/partials/Inventory'
 
+/* COMPONENTS */
+import { DiceRoll } from '@/components/Roll'
 
 const Playing = () => {
     const charId = getCookie("charId")
+
+    const [ rollState, setRollState ] = useState<{ rolling: boolean, rollConfigs: RollConfigsProps}>({
+        rolling: false,
+        rollConfigs: {
+            faces: 20,
+            times: 1
+        }
+    })
+    function closeRollScreen() {
+        setRollState({ ...rollState, rolling: false })
+    }
+    function roll(configs: RollConfigsProps) {
+        setRollState({ rolling: true, rollConfigs: configs })
+    }
 
     const [ showing, setShowing ] = useState<"char" | "stand" | "inventory">("char")
 
@@ -42,9 +58,10 @@ const Playing = () => {
             <li onClick={() => setShowing("stand")}>STAND</li>
             <li onClick={() => setShowing("inventory")}>INVENTÁRIO</li>
         </menu>
-        {showing == "char" && <Character {...charInfos} />}
+        {showing == "char" && <Character roll={roll} {...charInfos} />}
         {showing == "stand" && <Stand />}
         {showing == "inventory" && <Inventory/>}
+        {rollState.rolling && <DiceRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}
     </MainContainer>
 }
 

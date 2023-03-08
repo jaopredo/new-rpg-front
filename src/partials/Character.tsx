@@ -1,4 +1,4 @@
-import { Children, useRef, useEffect } from 'react'
+import { Children, useRef, useEffect, useState } from 'react'
 import { GoVerified } from 'react-icons/go'
 import Image from 'next/image'
 
@@ -18,16 +18,22 @@ import MentalEnergy from '@/components/MentalEnergy'
 import Level from '@/components/Level'
 
 /* TYPES */
-import { CharacterFormValues } from '@/types/';
+import { CharacterFormValues, RollConfigsProps } from '@/types/';
 
-const Character = ({ basic, attributes, specialitys, combat, level }: CharacterFormValues) => {
+interface CharacterProps extends CharacterFormValues {
+    roll: (configs: RollConfigsProps) => void
+}
+
+const Character = ({ roll, basic, attributes, specialitys, combat, level }: CharacterProps) => {
+    const [ advantages, setAdvantages ] = useState<number>(0)
+    const [ disadvantages, setDisadvantages ] = useState<number>(0)
+
     const specInfos = useRef()
 
     useEffect(() => {
         async function getData() {
             specInfos.current = await getCharSpecialitys()
         }
-        console.log(combat)
         getData()
     }, [])
 
@@ -45,17 +51,17 @@ const Character = ({ basic, attributes, specialitys, combat, level }: CharacterF
             <ul className={charStyles.advantagesList}>
                 <li>
                     <label htmlFor="vantagens">Vantagens: </label>
-                    <input type="number" defaultValue={0} min={0} id="vantagens" />
+                    <input type="number" onChange={e => setAdvantages(Number(e.target.value))} defaultValue={0} min={0} id="vantagens" />
                 </li>
                 <li>
                     <label htmlFor="desvantagens">Desvantagens: </label>
-                    <input type="number" defaultValue={0} min={0} id="desvantagens" />
+                    <input type="number" onChange={e => setDisadvantages(Number(e.target.value))} defaultValue={0} min={0} id="desvantagens" />
                 </li>
             </ul>
             <div className={sheetStyles.attrContainer}>
                 <h3>ATRIBUTOS</h3>
                 <ul className='generic-list'>
-                    {Children.toArray(Object.keys(attributes)?.map((id) => <li>
+                    {Children.toArray(Object.keys(attributes)?.map((id: string) => <li>
                         {/**
                          * INPUT INFOS = {id: 'id', label: 'texto'}
                          */}
@@ -66,6 +72,13 @@ const Character = ({ basic, attributes, specialitys, combat, level }: CharacterF
                             readOnly
                             defaultValue={1}
                             id={id}
+                            onClick={() => roll({
+                                faces: 20,
+                                times: 1 + (advantages - disadvantages) ** 2 ** 1/2,
+                                bonus: Math.floor(attributes[id] / 2),
+                                advantage: advantages > disadvantages,
+                                disadvantage: disadvantages > advantages
+                            })}
                             value={attributes[id]}
                         />
                     </li>
@@ -81,8 +94,16 @@ const Character = ({ basic, attributes, specialitys, combat, level }: CharacterF
                 </thead>
                 {Children.toArray(Object.keys(specInfos.current ?? []).map(
                     area => <tbody className={`${area}-container`}>
-                        {Children.toArray(specInfos.current[area].map(props => 
-                            <tr className={`${props.area} ${specialitys?.[area][props.id]&&'have-spec'}`}>
+                        {Children.toArray(specInfos.current?.[area].map(props => 
+                            <tr onClick={() => {
+                                if (!!specialitys?.[area][props.id]) roll({
+                                    faces: 20,
+                                    times: 1 + (advantages - disadvantages) ** 2 ** 1/2,
+                                    bonus: Math.floor(attributes[area] / 2) + 5,
+                                    advantage: advantages > disadvantages,
+                                    disadvantage: disadvantages > advantages
+                                })
+                            }} className={`${props.area} ${specialitys?.[area][props.id]&&'have-spec'}`}>
                                 <td>{props.label}</td>
                                 <td><GoVerified style={{
                                     opacity: Number(!!specialitys?.[area][props.id])
@@ -126,27 +147,18 @@ const Character = ({ basic, attributes, specialitys, combat, level }: CharacterF
         <div className={charStyles.reactionsArea}>
             <h2>Reações</h2>
             <div className={charStyles.reactionsContainer}>
-                <button type="button" className={charStyles.rollButton} onClick={e => {
-                    // setRolling(true)
-                    // setRollingText('CONTRA-ATAQUE')
-                    // setRollConfigs({
-                    //     faces: 20,
-                    //     times: 1,
-                    //     bonus: Math.floor(Number(charState.attributes.strengh) / 2) + (!!charState.specialitys.strengh.fight && 5),
-                    //     advantage: true,
-                    // })
-                }}>CONTRA-ATAQUE</button>
-                <button type="button" className={charStyles.rollButton} onClick={e => {
-                    // setRolling(true)
-                    // setRollingText('SOCO')
-                    // setRollConfigs({
-                    //     faces: charState.basic?.fightStyle==='fighter'?6:4,
-                    //     times: 1,
-                    //     bonus: Math.floor(
-                    //         Number(charState.attributes.strengh) / (charState.basic?.fightStyle==='figher'?1:2)
-                    //     )
-                    // })
-                }}>SOCO</button>
+                <button type="button" className={charStyles.rollButton} onClick={() => roll({
+                    faces: 20,
+                    times: 1,
+                    bonus: Math.floor(Number(attributes.strengh) / 2) + (!!specialitys.strengh.fight?5:0),
+                })}>CONTRA-ATAQUE</button>
+                <button type="button" className={charStyles.rollButton} onClick={e => roll({
+                    faces: basic.fightStyle === "fighter"?6:4,
+                    times: 1,
+                    bonus: Math.floor(Number(attributes.strengh) / (basic.fightStyle==='fighter'?1:2)),
+                    advantage: true,
+                })
+                }>SOCO</button>
             </div>
         </div>
         <div className={charStyles.levelArea}>
@@ -157,13 +169,13 @@ const Character = ({ basic, attributes, specialitys, combat, level }: CharacterF
             <h2>Dados</h2>
             <Image src={RpgDices} alt="imagens dos dados" useMap='#rpg-dices' />
             <map name="rpg-dices">
-                <area alt="1d100" title="1d100" href="#dices-area" coords="42,44,25" shape="circle"/>
-                <area alt="1d10" title="1d10" href="#dices-area" coords="101,43,24" shape="circle"/>
-                <area alt="1d12" title="1d12" href="#dices-area" coords="160,41,29" shape="circle"/>
-                <area alt="1d20" title="1d20" href="#dices-area" coords="228,39,24" shape="circle"/>
-                <area alt="1d4" title="1d4" href="#dices-area" coords="65,104,24" shape="circle"/>
-                <area alt="1d6" title="1d6" href="#dices-area" coords="143,106,23" shape="circle"/>
-                <area alt="1d8" title="1d8" href="#dices-area" coords="212,106,21" shape="circle"/>
+                <area onClick={() => roll({ faces: 100, times: 1 })} alt="1d100" title="1d100" href="#dices-area" coords="42,44,25" shape="circle"/>
+                <area onClick={() => roll({ faces: 10, times: 1 })} alt="1d10" title="1d10" href="#dices-area" coords="101,43,24" shape="circle"/>
+                <area onClick={() => roll({ faces: 12, times: 1 })} alt="1d12" title="1d12" href="#dices-area" coords="160,41,29" shape="circle"/>
+                <area onClick={() => roll({ faces: 20, times: 1 })} alt="1d20" title="1d20" href="#dices-area" coords="228,39,24" shape="circle"/>
+                <area onClick={() => roll({ faces: 4, times: 1 })} alt="1d4" title="1d4" href="#dices-area" coords="65,104,24" shape="circle"/>
+                <area onClick={() => roll({ faces: 6, times: 1 })} alt="1d6" title="1d6" href="#dices-area" coords="143,106,23" shape="circle"/>
+                <area onClick={() => roll({ faces: 8, times: 1 })} alt="1d8" title="1d8" href="#dices-area" coords="212,106,21" shape="circle"/>
             </map>
         </div>
     </CharContainer>
