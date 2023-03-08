@@ -1,0 +1,32 @@
+@use "../../sass/modules/mixins";
+
+
+.levelUpAttributeContainer {
+    @include mixins.flex($jc: space-around);
+
+    label {
+        font-size: 1.3em;
+        font-weight: bolder;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    
+    * {
+        width: 100%;
+    }
+}
+
+.attrTitle {
+    margin-bottom: 20px;
+    span {
+        color: #65ff60;
+    }
+}
+
+.chooseList {
+    @include mixins.flex($g: 10px);
+    font-size: 1.1em;
+    padding: 20px;
+}

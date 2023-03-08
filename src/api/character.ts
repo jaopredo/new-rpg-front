@@ -18,3 +18,9 @@ export async function getCharacter(id: String = "") {
     const response = await AxiosService.get(`/character${id && `?id=${id}`}`, { headers: returnAuthHeader() })
     return response.data
 }
+
+
+export async function levelUp(id: String, obj: Object) {
+    const response = await AxiosService.patch(`/character/levelUp?id=${id}`, obj, { headers: returnAuthHeader() })
+    return response.data
+}

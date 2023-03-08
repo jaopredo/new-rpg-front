@@ -19,12 +19,15 @@ import Level from '@/components/Level'
 
 /* TYPES */
 import { CharacterFormValues, RollConfigsProps } from '@/types/';
+import LevelUpForm from '@/components/LevelUpForm'
 
 interface CharacterProps extends CharacterFormValues {
     roll: (configs: RollConfigsProps) => void
 }
 
 const Character = ({ roll, basic, attributes, specialitys, combat, level }: CharacterProps) => {
+    const [ showLevelUpForm, setShowLevelUpForm ] = useState<boolean>()
+
     const [ advantages, setAdvantages ] = useState<number>(0)
     const [ disadvantages, setDisadvantages ] = useState<number>(0)
 
@@ -163,7 +166,7 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
         </div>
         <div className={charStyles.levelArea}>
             <h2>Level</h2>
-            {level.actualLevel && <Level {...level} />}
+            {level.actualLevel && <Level setShowLevelUpForm={setShowLevelUpForm} {...level} />}
         </div>
         <div className={charStyles.dicesArea}>
             <h2>Dados</h2>
@@ -178,6 +181,7 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                 <area onClick={() => roll({ faces: 8, times: 1 })} alt="1d8" title="1d8" href="#dices-area" coords="212,106,21" shape="circle"/>
             </map>
         </div>
+        { showLevelUpForm && <LevelUpForm attributes={attributes} specialitys={specialitys} closeWindow={() => setShowLevelUpForm(false)} /> }
     </CharContainer>
 }
 

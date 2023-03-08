@@ -1,32 +1,11 @@
 import React, { useEffect, useState, HTMLAttributes, MouseEventHandler } from 'react'
 import styled /*{ keyframes }*/ from 'styled-components'
 // import { fadeIn } from 'react-animations';
-import { MdClose } from 'react-icons/md'
 
 /* CSS */
 import styles from './style.module.scss'
 
-
-/* COMPONENTES */
-const RollContainer = styled.div`
-    background: #636363;
-    text-align: center;
-
-    width: 50%;
-    height: 50%;
-    padding: 20px;
-
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
-    color: white;
-    
-    border-radius: 10px;
-    box-shadow: 3px 3px 3px #000000;
-    /* animation: 1s  ; */
-`
+import { WindowContainer } from '../Containers'
 
 interface RollProps {
     natMax?: boolean,
@@ -113,8 +92,7 @@ export const DiceRoll = ({ children, closeRollScreen, rollConfigs }: DiceRollPro
         setRolls(definitiveRolls)
     }, [])
 
-    return <RollContainer>
-        <MdClose className={styles.closeIcon} onClick={closeRollScreen}/>
+    return <WindowContainer closeWindow={closeRollScreen}>
         <h1>RESULTADO DA ROLAGEM</h1>
         { children }
         <div className={styles.contentContainer}>
@@ -130,5 +108,5 @@ export const DiceRoll = ({ children, closeRollScreen, rollConfigs }: DiceRollPro
                 </DiceContainer>)
             ) }
         </div>
-    </RollContainer>;
+    </WindowContainer>;
 }

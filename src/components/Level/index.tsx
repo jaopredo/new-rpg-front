@@ -1,15 +1,17 @@
-import { useState, useRef, useEffect, KeyboardEvent } from 'react'
+import { useState, useRef, useEffect, KeyboardEvent, Dispatch, SetStateAction } from 'react'
 import styled from "styled-components"
 
 import style from './style.module.scss'
 
 /* API */
 import { getMaxLevel } from '@/api/config'
+
 /* COMPONENTS */
 interface LevelProps {
     actualLevel: number,
     maxXP: number,
     actualXP: number,
+    setShowLevelUpForm: Dispatch<SetStateAction<boolean>>
 }
 
 const LevelSpan = styled.span<{ levelUp: boolean }>`
@@ -45,7 +47,7 @@ const ActualXpContainer = styled.div`
     background: #fffd6a;
 `
 
-const Level = ({ actualLevel, maxXP, actualXP }: LevelProps) => {
+const Level = ({ actualLevel, maxXP, actualXP, setShowLevelUpForm }: LevelProps) => {
     const actualXPInputRef = useRef()
     const actualXPContainerRef = useRef()
 
@@ -114,7 +116,7 @@ const Level = ({ actualLevel, maxXP, actualXP }: LevelProps) => {
         { !onMaxLevel && <button
             type='button'
             disabled={!canLevelUp}
-            // onClick={()=>setShowUpForm(true)}
+            onClick={()=>setShowLevelUpForm(true)}
         >EVOLUIR</button> }
     </div>
 }

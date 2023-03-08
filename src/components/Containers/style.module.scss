@@ -1,0 +1,9 @@
+.closeIcon {
+    display: block;
+    color: white;
+    float: right;
+    font-size: 1.5em;
+
+    &:hover { color: rgb(216, 216, 216); cursor: pointer; }
+    &:active { color: rgb(173, 173, 173); }
+}
