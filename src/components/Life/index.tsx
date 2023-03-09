@@ -1,7 +1,10 @@
 import { useRef, useEffect, ChangeEvent, useState, KeyboardEvent } from 'react'
 import styled from 'styled-components'
+import { getCookie } from 'cookies-next'
 
 import charStyles from '@/partials/Character.module.scss'
+
+import { saveLife } from '@/api/character'
 
 interface LifeProps {
     maxLife: number,
@@ -30,6 +33,13 @@ const Life = ({ maxLife, actualLife }: LifeProps) => {
     const [ actualLifeState, setActualLifeState ] = useState<number>(actualLife)
 
     useEffect(() => {
+        console.log(actualLife)
+        console.log(actualLifeState)
+        async function setData() {
+            if(actualLifeState != actualLife) await saveLife(getCookie("charId"), actualLifeState)
+        }
+        setData()
+
         let percentage
         // Área da vida
         percentage = (actualLifeState/maxLife) * 100

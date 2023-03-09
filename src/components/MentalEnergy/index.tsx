@@ -1,7 +1,10 @@
 import { useRef, useEffect, ChangeEvent, useState, KeyboardEvent } from 'react'
 import styled from 'styled-components'
+import { getCookie } from 'cookies-next'
 
 import charStyles from '@/partials/Character.module.scss'
+
+import { saveMentalEnergy } from '@/api/character'
 
 interface MentalEnergyProps {
     maxMentalEnergy: number,
@@ -36,6 +39,11 @@ const MentalEnergy = ({ maxMentalEnergy, actualMentalEnergy }: MentalEnergyProps
         percentage = percentage<0?0:percentage>100?100:percentage
         
         if (actualMentalEnergyContainerRef.current) actualMentalEnergyContainerRef.current.style.width = `${percentage}%`
+
+        async function save() {
+            if (actualMentalEnergyState != actualMentalEnergy) await saveMentalEnergy(getCookie("charId"), actualMentalEnergyState)
+        }
+        save()
     }, [ actualMentalEnergyState ])
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {

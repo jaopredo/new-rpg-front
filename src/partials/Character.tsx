@@ -54,11 +54,11 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
             <ul className={charStyles.advantagesList}>
                 <li>
                     <label htmlFor="vantagens">Vantagens: </label>
-                    <input type="number" onChange={e => setAdvantages(Number(e.target.value))} defaultValue={0} min={0} id="vantagens" />
+                    <input type="number" className={charStyles.vantagens} onChange={e => setAdvantages(Number(e.target.value))} defaultValue={0} min={0} id="vantagens" />
                 </li>
                 <li>
                     <label htmlFor="desvantagens">Desvantagens: </label>
-                    <input type="number" onChange={e => setDisadvantages(Number(e.target.value))} defaultValue={0} min={0} id="desvantagens" />
+                    <input type="number" className={charStyles.desvantagens} onChange={e => setDisadvantages(Number(e.target.value))} defaultValue={0} min={0} id="desvantagens" />
                 </li>
             </ul>
             <div className={sheetStyles.attrContainer}>
@@ -120,12 +120,12 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
         <div className={charStyles.healthArea}>
             <h2>Saúde</h2>
             {combat.actualLife && <Life
-                actualLife={combat?.actualLife}
-                maxLife={combat?.life}
+                actualLife={combat.actualLife}
+                maxLife={combat.life}
             />}
             {combat.actualMentalEnergy && <MentalEnergy
-                actualMentalEnergy={combat?.actualMentalEnergy}
-                maxMentalEnergy={combat?.mentalEnergy}
+                actualMentalEnergy={combat.actualMentalEnergy}
+                maxMentalEnergy={combat.mentalEnergy}
             />}
         </div>
         <div className={charStyles.movimentArea}>

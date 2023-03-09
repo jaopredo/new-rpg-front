@@ -17,12 +17,14 @@
         border: 1px solid black;
         font-weight: bold;
     }
-    #vantagens {
-        color: $advantage;
-    }
-    #desvantagens {
-        color: $disadvantage;
-    }
+}
+.vantagens {
+    color: $advantage;
+    font-size: 1.1em;
+}
+.desvantagens {
+    @extend .vantagens;
+    color: $disadvantage;
 }
 
 /* STATUS */

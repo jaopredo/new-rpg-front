@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, KeyboardEvent, Dispatch, SetStateAction } from 'react'
 import styled from "styled-components"
+import { getCookie } from 'cookies-next'
 
 import style from './style.module.scss'
 
 /* API */
 import { getMaxLevel } from '@/api/config'
+import { saveXP } from '@/api/character'
 
 /* COMPONENTS */
 interface LevelProps {
@@ -59,6 +61,7 @@ const Level = ({ actualLevel, maxXP, actualXP, setShowLevelUpForm }: LevelProps)
     useEffect(() => {
         async function getData() {
             setOnMaxLevel(actualLevel == await getMaxLevel())
+            await saveXP(getCookie("charId"), actualXPState)
         }
         getData()
 
