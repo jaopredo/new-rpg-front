@@ -46,16 +46,24 @@ $normal-font-size: 1.2em;
 
 
 .doneAbility {
+    @extend .ability;
     text-align: center;
-    min-width: 30%;
+    width: 100%; 
     font-weight: bold;
     
+    input {
+        font-size: .8em;
+    }
+
     h4 {
         margin: 0;
     }
+    h5 {
+        font-size: 1.3em;
+    }
 }
 
-.infos-container {
+.infosContainer {
     @include mixins.flex($dir: column);
     gap: 10px;
     
@@ -66,7 +74,12 @@ $normal-font-size: 1.2em;
     }
 }
 
-.hab-info {
+.doneInfosContainer {
+    @extend .infosContainer;
+    width: 100%;
+}
+
+.habInfo {
     padding: 5px;
     border: 1px solid black;
     width: fit-content;

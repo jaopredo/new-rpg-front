@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { getCookie } from 'cookies-next'
+import { ImExit } from 'react-icons/im'
+import Router from 'next/router'
 
-import styles from "@/sass/Sheet.module.scss"
 import playStyles from '@/sass/Playing.module.scss'
 
 /* COMPONENTS */
@@ -12,7 +13,7 @@ import { getCharacter } from '@/api/character'
 import { getStand } from '@/api/stand'
 
 /* TYPES */
-import { CharacterFormValues, CharacterDefaultValues, RollConfigsProps } from '../types'
+import { CharacterFormValues, CharacterDefaultValues, RollConfigsProps, StandType } from '../types'
 
 /* PARTIALS */
 import Character from '@/partials/Character'
@@ -42,12 +43,12 @@ const Playing = () => {
     const [ showing, setShowing ] = useState<"char" | "stand" | "inventory">("char")
 
     const [ charInfos, setCharInfos ] = useState<CharacterFormValues>(CharacterDefaultValues)
-    // const [ standInfos, setStandInfos ] = useState()
+    const [ standInfos, setStandInfos ] = useState<StandType>()
 
     useEffect(() => {
         async function getData() {
             setCharInfos(await getCharacter(charId))
-            // setStandInfos(await getStand(charId))
+            setStandInfos(await getStand(charId))
         }
         getData()
     }, [])
@@ -57,9 +58,10 @@ const Playing = () => {
             <li onClick={() => setShowing("char")}>PERSONAGEM</li>
             <li onClick={() => setShowing("stand")}>STAND</li>
             <li onClick={() => setShowing("inventory")}>INVENTÁRIO</li>
+            <li onClick={() => Router.back()}><ImExit/></li>
         </menu>
         {showing == "char" && <Character roll={roll} {...charInfos} />}
-        {showing == "stand" && <Stand />}
+        {showing == "stand" && <Stand roll={roll} stand={standInfos} />}
         {showing == "inventory" && <Inventory/>}
         {rollState.rolling && <DiceRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}
     </MainContainer>

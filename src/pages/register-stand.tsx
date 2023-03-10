@@ -449,7 +449,7 @@ const RegisterStand: React.FC = () => {
                 somatorio += attr
             })
 
-            if (somatorio > substandMaxPoints || somatorio < substandMaxPoints) {
+            if (!!data.substand && (somatorio > substandMaxPoints || somatorio < substandMaxPoints)) {
                 setErrorMessage("Erro no somatório dos pontos dos atributos do substand!")
                 return
             }

@@ -28,6 +28,51 @@ export const CharContainer = styled.div`
     }
 `
 
+const standTemplateAreas = `
+    "basic basic ."
+    "attrs attrs substand"
+    "batalha movimento substand"
+    "hab hab substand"
+    "hab hab substand"
+`
+const actStandTemplateAreas = `
+    "basic basic ."
+    "acts acts acts"
+    "acts acts acts"
+    "acts acts acts"
+    "acts acts acts"
+`
+
+export const StandContainer = styled.div<{ acts: boolean }>`
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 37.5% 37.5% auto;
+    grid-template-rows: 20vh auto auto auto auto;
+    grid-template-areas: ${props => props.acts?actStandTemplateAreas:standTemplateAreas};
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    height: 100%;
+
+    input {
+        text-align: center;
+        transition: background-color 0.5s;
+        &:hover {
+            background-color: #b4b4b4;
+            cursor: pointer;
+        }
+        &:active {
+            background-color: #808080;
+        }
+    }
+    h2 {
+        background: #2b2b2b;
+        color: white;
+        text-align: center;
+        width: 100%;
+        padding: 5px;
+    }
+`
+
 
 const WindowContainerDiv = styled.div`
     background: #636363;

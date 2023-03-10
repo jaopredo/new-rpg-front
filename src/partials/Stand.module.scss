@@ -1,0 +1,46 @@
+@use "sass:color";
+@use "../sass/modules/mixins.scss";
+@use "../sass/modules/colors.scss" as *;
+
+.battleArea {
+    grid-area: batalha;
+}
+
+.abilitysArea {
+    @include mixins.flex($dir: column);
+    gap: 20px;
+    grid-area: hab;
+}
+
+.abilitys, .standJump {
+    @include mixins.flex();
+    gap: 10px;
+    font-size: 1.3em;
+    font-weight: bold;
+    width: 100%;
+}
+
+.substandArea {
+    grid-area: substand;
+}
+
+.substandAbilityContainer {
+    @include mixins.flex($dir: column);
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.infosContainer {
+    @include mixins.flex($dir: column);
+    gap: 5px;
+    padding: 10px;
+
+    p {
+        font-size: 1.3rem;
+        font-weight: bold;
+    }
+    div {
+        @include mixins.flex($jc: space-between);
+        width: 100%;
+    }
+}

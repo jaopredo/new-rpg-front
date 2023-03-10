@@ -33,8 +33,6 @@ const Life = ({ maxLife, actualLife }: LifeProps) => {
     const [ actualLifeState, setActualLifeState ] = useState<number>(actualLife)
 
     useEffect(() => {
-        console.log(actualLife)
-        console.log(actualLifeState)
         async function setData() {
             if(actualLifeState != actualLife) await saveLife(getCookie("charId"), actualLifeState)
         }

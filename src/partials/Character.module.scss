@@ -126,10 +126,7 @@
     }
 }
 
-/* MOVIMENTO */
-.movimentArea {
-    grid-area: movimento;
-}
+
 .charMove {
     @include mixins.flex($jc: flex-start, $dir: column);
     height: 100%;

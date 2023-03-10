@@ -1,6 +1,7 @@
-import React from 'react';
+import { MouseEventHandler } from 'react';
 
 import styles from './style.module.scss'
+import sheetStyles from '@/sass/Sheet.module.scss'
 
 interface AbilityProps {
     title: string,
@@ -32,6 +33,55 @@ const Ability = ({ title, register, abName }: AbilityProps) => {
             })}/>
         </div>
         <textarea id="description" {...register(`${abName}.description`, { required: true })}></textarea>
+    </div>
+}
+
+
+interface DoneAbilityProps {
+    title: string,
+    infos: {
+        name: string,
+        dice: string,
+        effect: string,
+        description: string
+    },
+    rollDice: MouseEventHandler<HTMLInputElement>
+}
+export function DoneHab({ title, infos, rollDice }: DoneAbilityProps) {
+    const handleEffect = (effect: string) => {
+        const effects = {
+            none: 'Nenhum',
+            burning: 'Queimar',
+            bullet: 'Projétil',
+            slashing: 'Cortar',
+            explosion: 'Explosivo',
+            concussion: 'Pancada',
+            heal: 'Curar',
+            freezing: 'Congelar',
+        }
+
+        return effects[effect];
+    }
+
+    return <div className={styles.doneAbility}>
+        <h4>{title}</h4>
+        <h5>{infos?.name}</h5>
+        <div className={styles.doneInfosContainer}>
+            <div className={styles.wrapper}>
+                <p>EFEITO</p>
+                <span className={styles.habInfo}>{ handleEffect(infos?.effect) }</span>
+            </div>
+            <div className={styles.wrapper}>
+                <p>DADO</p>
+                <input
+                    className={styles.habInfo}
+                    defaultValue={infos?.dice}
+                    readOnly
+                    onClick={rollDice}
+                />
+            </div>
+            <p className={styles.description}>{infos?.description}</p>
+        </div>
     </div>
 }
 

@@ -234,57 +234,69 @@ export interface StandAbility {
     description: String,
 }
 
-export type StandFormValues = {
-    stand: {
-        img: string,
-        basic: {
-            name: String,
-            standType: String,
-            weakPoint: String,
-            img: string,
-        },
-        attributes?: StandAttributes,
-        abilitys?: {
-            firstMain?: StandAbility,
-            secondMain?: StandAbility,
-            passive?: StandAbility
-        },
-        acts?: {
-            act1: {
-                img: string,
-                attributes: StandAttributes,
-                ability: StandAbility,
-            },
-            act2: {
-                img: string,
-                attributes: StandAttributes,
-                ability: StandAbility,
-            },
-            act3: {
-                img: string,
-                attributes: StandAttributes,
-                ability: StandAbility,
-            },
-            act4: {
-                img: string,
-                attributes: StandAttributes,
-                ability: StandAbility,
-            }
-        }
+export type StandType = {
+    img?: string,
+    basic: {
+        name: String,
+        standType: String,
+        weakPoint: String,
     },
-    substand?: {
-        img: string,
-        basic: {
-            name: string,
-            standType: string,
-            weakPoint: string,
-            img: string,
+    attributes?: StandAttributes,
+    abilitys?: {
+        firstMain?: StandAbility,
+        secondMain?: StandAbility,
+        passive?: StandAbility
+    },
+    combat: {
+        damage: number,
+        shield: number,
+        bonus: number
+    },
+    move: {
+        range: String,
+        apr: number,
+        movement: String,
+        standJump: String
+    },
+    acts?: {
+        act1: {
+            img?: string,
+            attributes: StandAttributes,
+            ability: StandAbility,
         },
-        attributes?: StandAttributes,
-        abilitys: StandAbility,
+        act2: {
+            img?: string,
+            attributes: StandAttributes,
+            ability: StandAbility,
+        },
+        act3: {
+            img?: string,
+            attributes: StandAttributes,
+            ability: StandAbility,
+        },
+        act4: {
+            img?: string,
+            attributes: StandAttributes,
+            ability: StandAbility,
+        }
     }
 }
+export type SubstandType = {
+    img: string,
+    basic: {
+        name: string,
+        standType: string,
+        weakPoint: string,
+        img: string,
+    },
+    attributes?: StandAttributes,
+    abilitys: StandAbility,
+}
 
+export type StandFormValues = {
+    stand: StandType,
+    substand?: SubstandType
+}
 
 export interface RollConfigsProps {
     faces: number,

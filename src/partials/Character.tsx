@@ -128,7 +128,7 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                 maxMentalEnergy={combat.mentalEnergy}
             />}
         </div>
-        <div className={charStyles.movimentArea}>
+        <div className={sheetStyles.movimentArea}>
             <h2>Mov.</h2>
             <p className={charStyles.charMove}>{combat.movement}m</p>
         </div>
