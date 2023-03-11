@@ -1,0 +1,72 @@
+.itemsArea {
+    grid-area: items;
+
+    h2 {
+        position: relative;
+
+        background-color: #3d3d3d;
+        color: white;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 5px;
+    }
+}
+
+.weaponsArea {
+    @extend .itemsArea;
+    grid-area: weapons;
+}
+
+.usedSpaces {
+    background: #00000000;
+    display: inline;
+}
+
+.spaces {
+    position: absolute;
+    right: 40px;
+    top: 0;
+    width: 100px;
+}
+
+.itemsTable {
+    width: 100%;
+
+    text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.7vw;
+
+    th:last-child {
+        text-align: center;
+    }
+
+    tr:hover .delContainer {
+        opacity: 1;
+    }
+}
+
+.addItem {
+    font-size: 2vw;
+    color: #36922a;
+    transition: transform 500ms;
+    &:hover { cursor: pointer; transform: scale(1.2); }
+}
+.delContainer {
+    text-align: center;
+    opacity: 0;
+    transition: opacity 200ms;
+    &:hover {
+        cursor: pointer;
+        color: rgb(236, 75, 75);
+    }
+    &:active {
+        color: rgb(209, 56, 56);
+    }
+}
+
+.damageWeapon {
+    &:hover {
+        background-color: #d6d6d6;
+        cursor: pointer;
+    }
+}

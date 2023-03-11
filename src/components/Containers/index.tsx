@@ -73,6 +73,17 @@ export const StandContainer = styled.div<{ acts: boolean }>`
     }
 `
 
+export const InventoryContainer = styled.div`
+    width: 100%;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 20vh auto auto;
+    grid-template-areas:
+        "basic"
+        "items"
+        "weapons";
+`
+
 
 const WindowContainerDiv = styled.div`
     background: #636363;

@@ -1,0 +1,43 @@
+@use "../../sass/modules/mixins.scss";
+
+.newItemForm {
+    @include mixins.flex($ai: flex-start, $dir: column);
+    margin: 20px;
+    width: 40%;
+    gap: 10px;
+    font-size: 1.2em;
+    font-family: Arial;
+
+    select {
+        font-size: 1.1em;
+    }
+    input {
+        background: #c5c5c5;
+        color: #5c5c5c;
+        outline: none;
+        border: none;
+        padding: 5px;
+        font-size: 1.6vw;
+        text-align: center
+    }
+    textarea {
+        @extend input;
+        padding: 5px;
+        width: 100%;
+        height: 100px;
+    }
+    input[type="number"] {
+        width: 80px;
+        text-align: center;
+    }
+}
+
+.buttonsContainer {
+    @include mixins.flex($jc: space-between);
+    font-size: 2vw;
+    width: 100%;
+
+    button {
+        @include mixins.flex();
+    }
+}

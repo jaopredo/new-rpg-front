@@ -316,3 +316,20 @@ export interface RollConfigsProps {
     advantage?: boolean,
     disadvantage?: boolean
 }
+
+
+export type Item = {
+    _id: string,
+    name: string,
+    quantity: number,
+    weight: number,
+    weapon: boolean,
+    details: string,
+    damage: string,
+    tipo: string,
+    range: string
+}
+
+export interface InventoryType {
+    items: Item[]
+}

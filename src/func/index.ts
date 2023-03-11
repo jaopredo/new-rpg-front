@@ -12,3 +12,8 @@ export const returnRollConfigsByString = (dice: string) => {
         faces: Number(faces)
     }
 }
+
+export const handleDice = (d: string) => {
+    const [ dice ] = d.split('_')
+    return dice
+}

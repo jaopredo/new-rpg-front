@@ -5,6 +5,9 @@ import Router from 'next/router'
 
 import styles from '@/sass/Sheet.module.scss'
 
+/* FUNCTIONS */
+import { handleDice } from '../func'
+
 /* COMPONENTS */
 import MainContainer from '@/components/MainContainer'
 import PointsContainer from '@/components/PointsContainer'
@@ -396,11 +399,6 @@ const RegisterStand: React.FC = () => {
         act2: 13,
         act3: 15,
         act4: 18
-    }
-
-    const handleDice = (d: string) => {
-        const [ dice ] = d.split('_')
-        return dice
     }
 
     const [ errorMessage, setErrorMessage ] = useState<string>("")
