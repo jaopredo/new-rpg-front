@@ -398,6 +398,11 @@ const RegisterStand: React.FC = () => {
         act4: 18
     }
 
+    const handleDice = (d: string) => {
+        const [ dice ] = d.split('_')
+        return dice
+    }
+
     const [ errorMessage, setErrorMessage ] = useState<string>("")
 
     const [ isActStand, setIsActStand ] = useState<boolean>(false)
@@ -414,12 +419,17 @@ const RegisterStand: React.FC = () => {
             newData.stand.attributes = undefined
             newData.substand = undefined
 
-            let somatorio = 0
+            Object.keys(data.stand.acts).forEach(act => {
+                newData.stand.acts[act].ability.dice = handleDice(data.stand.acts[act].ability.dice)
+            })
+
             let error = false
             Object.keys(newData.stand.acts ?? []).forEach(act => {
+                let somatorio = 0
                 for (let num of Object.values(newData.stand.acts?.[act].attributes)) {
                     somatorio += num
                 }
+                console.log(somatorio)
                 if (somatorio > actStandMaxPoints[act] || somatorio < actStandMaxPoints[act]) {
                     error = true
                     return
@@ -432,6 +442,10 @@ const RegisterStand: React.FC = () => {
             }
         } else {
             newData.stand.acts = undefined
+
+            Object.keys(data.stand.abilitys).forEach(abName => {
+                newData.stand.abilitys[abName].dice = handleDice(data.stand.abilitys[abName].dice)
+            })
 
             // Somando atributos do stand
             let somatorio = 0
