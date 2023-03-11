@@ -1,7 +1,7 @@
-import { MouseEventHandler } from 'react';
+import { MouseEventHandler } from 'react'
+import InputMask from 'react-input-mask-next'
 
 import styles from './style.module.scss'
-import sheetStyles from '@/sass/Sheet.module.scss'
 
 interface AbilityProps {
     title: string,
@@ -28,9 +28,10 @@ const Ability = ({ title, register, abName }: AbilityProps) => {
         </div>
         <div className={styles.wrapper}>
             <label htmlFor="dice">DADO</label>
-            <input type="text" maxLength={5} {...register(`${abName}.dice`, {
+            {/* <input type="text" maxLength={5} {...register(`${abName}.dice`, {
                 required: true,
-            })}/>
+            })}/> */}
+            <InputMask mask="9D99" {...register(`${abName}.dice`)} />
         </div>
         <textarea id="description" {...register(`${abName}.description`, { required: true })}></textarea>
     </div>

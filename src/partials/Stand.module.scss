@@ -44,3 +44,14 @@
         width: 100%;
     }
 }
+
+.subContainer {
+    @include mixins.flex($dir: column, $g: 10px);
+    padding: 10px;
+    
+    li {
+        @include mixins.flex($jc: space-between);
+        width: 100%;
+        font-weight: bolder;
+    }
+}

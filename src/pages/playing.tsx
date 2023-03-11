@@ -10,10 +10,10 @@ import MainContainer from '@/components/MainContainer'
 
 /* API */
 import { getCharacter } from '@/api/character'
-import { getStand } from '@/api/stand'
+import { getStand, getSubstand } from '@/api/stand'
 
 /* TYPES */
-import { CharacterFormValues, CharacterDefaultValues, RollConfigsProps, StandType } from '../types'
+import { CharacterFormValues, CharacterDefaultValues, RollConfigsProps, StandType, SubstandType } from '../types'
 
 /* PARTIALS */
 import Character from '@/partials/Character'
@@ -44,11 +44,14 @@ const Playing = () => {
 
     const [ charInfos, setCharInfos ] = useState<CharacterFormValues>(CharacterDefaultValues)
     const [ standInfos, setStandInfos ] = useState<StandType>()
+    const [ substandInfos, setSubstandInfos ] = useState<SubstandType>()
 
     useEffect(() => {
         async function getData() {
             setCharInfos(await getCharacter(charId))
-            setStandInfos(await getStand(charId))
+            const stand = await getStand(charId)
+            setStandInfos(stand)
+            setSubstandInfos(await getSubstand(stand?.id))
         }
         getData()
     }, [])
@@ -61,7 +64,7 @@ const Playing = () => {
             <li onClick={() => Router.back()}><ImExit/></li>
         </menu>
         {showing == "char" && <Character roll={roll} {...charInfos} />}
-        {showing == "stand" && <Stand roll={roll} stand={standInfos} />}
+        {showing == "stand" && <Stand roll={roll} stand={standInfos} substand={substandInfos} />}
         {showing == "inventory" && <Inventory/>}
         {rollState.rolling && <DiceRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}
     </MainContainer>

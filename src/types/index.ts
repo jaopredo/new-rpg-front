@@ -290,7 +290,18 @@ export type SubstandType = {
         img: string,
     },
     attributes?: StandAttributes,
-    abilitys: StandAbility,
+    ability: StandAbility,
+    combat: {
+        damage: number,
+        shield: number,
+        bonus: number
+    },
+    move: {
+        range: string,
+        apr: number,
+        movement: string,
+        standJump: string
+    }
 }
 
 export type StandFormValues = {

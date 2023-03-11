@@ -38,6 +38,8 @@ $normal-font-size: 1.2em;
     input {
         border: 1px solid black;
         width: 60px;
+        font-size: 1.7em;
+        padding: 5px;
     }
     select {
         font-size: $normal-font-size;
@@ -80,6 +82,7 @@ $normal-font-size: 1.2em;
 }
 
 .habInfo {
+    @include mixins.flex();
     padding: 5px;
     border: 1px solid black;
     width: fit-content;
