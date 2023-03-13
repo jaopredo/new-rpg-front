@@ -1,6 +1,8 @@
 import { HTMLAttributes, MouseEventHandler } from "react"
-import styled from "styled-components"
+import styled, { keyframes } from "styled-components"
 import { MdClose } from 'react-icons/md'
+import { MoonLoader } from "react-spinners"
+import { fadeIn } from 'react-animations'
 
 import styles from './style.module.scss'
 
@@ -153,11 +155,29 @@ export const DiceContainer = styled.div`
             background: transparent;
         }
     }
-`;
+`
 
 export function DiceWindowContainer({ closeWindow, children, ...rest }: WindowContainerProps) {
     return <DiceContainer {...rest}>
         {children}
         <button onClick={closeWindow}>FECHAR</button>
     </DiceContainer>
+}
+
+const WindowLoaderContainer = styled.div`
+    position: fixed;
+    width: 100vw;
+    height: 100vw;
+
+    background: #0c0c0cc5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    animation: 1s ${keyframes`${fadeIn}`};
+`
+
+export function LoaderWindowContainer() {
+    return <WindowLoaderContainer><MoonLoader color="#e9e9e9"/></WindowLoaderContainer>
 }

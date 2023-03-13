@@ -11,6 +11,19 @@
 
     position: relative;
 
+    h1 {
+        position: absolute;
+        top: 30px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: bolder;
+    }
+
+    h2 {
+        @extend h1;
+        top: 60px;
+        color: rgb(253, 104, 104);
+    }
+
     button {
         background: #494949;
         color: white;

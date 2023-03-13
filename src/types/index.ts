@@ -1,11 +1,4 @@
 
-export type PlayerFormValues = {
-    email: String,
-    password: String,
-    confPassw: String
-}
-
-
 export type CharacterAttributes = {
     strengh: number,
     dexterity: number,

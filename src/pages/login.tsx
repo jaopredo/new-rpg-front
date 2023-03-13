@@ -2,6 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { useState } from "react"
 import { setCookie } from "cookies-next"
 import Router from "next/router"
+import { MoonLoader } from 'react-spinners'
 
 import styles from '@/sass/Form.module.scss'
 
@@ -12,10 +13,11 @@ import { loginPlayer } from "@/api/player"
 import MainContainer from "@/components/MainContainer"
 
 /* TYPES */
-import { PlayerFormValues } from "@/types/"
+import { PlayerFormValues } from "@/types/player"
 
 export default function Register() {
-    const [ errorMsg, setErrorMsg ] = useState("")
+    const [ errorMsg, setErrorMsg ] = useState<string>("")
+    const [ isLoading, setIsLoading ] = useState<boolean>(false)
 
     const { register, handleSubmit } = useForm<PlayerFormValues>()
     const onSubmit: SubmitHandler<PlayerFormValues> = async (data) => {
@@ -23,12 +25,14 @@ export default function Register() {
             setErrorMsg("A senha é menor que 8 caracteres")
             return
         }
+        setIsLoading(true)
         const response = await loginPlayer(data)
         if (response.token) {
             setCookie('token', response.token)
             Router.push('/logged')
         }
         if (response.error) {
+            setIsLoading(false)
             setErrorMsg(response.msg)
         }
     }
@@ -40,6 +44,7 @@ export default function Register() {
 
             <button type="submit">LOGIN</button>
             { errorMsg }
+            { isLoading && <MoonLoader color="#fefefe" /> }
         </form>
     </MainContainer>
 }

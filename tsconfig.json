@@ -18,7 +18,7 @@
     "paths": {
       "@/components/*": ["./src/components/*"],
       "@/sass/*": ["./src/sass/*"],
-      "@/types/*": ["./src/types/index.ts"],
+      "@/types/*": ["./src/types/*"],
       "@/images/*": ["./src/images/*"],
       "@/api/*": ["./src/api/*"],
       "@/partials/*": ["./src/partials/*"],
