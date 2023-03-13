@@ -2,6 +2,11 @@
 
 .contentContainer {
     @include mixins.flex();
-    height: 70%;
+    height: 50%;
     gap: 10px;
+    z-index: 1;
+
+    span {
+        @include mixins.flex($dir: column, $g: 10px);
+    }
 }

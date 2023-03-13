@@ -22,23 +22,35 @@ import Stand from '@/partials/Stand'
 import Inventory from '@/partials/Inventory'
 
 /* COMPONENTS */
-import { DiceRoll } from '@/components/Roll'
+import { DiceRoll, DamageRoll, Barragem } from '@/components/Roll'
 
 const Playing = () => {
     const charId = getCookie("charId")
 
-    const [ rollState, setRollState ] = useState<{ rolling: boolean, rollConfigs: RollConfigsProps}>({
+    const [ rollState, setRollState ] = useState<{ rolling: boolean, rollConfigs: RollConfigsProps }>({
         rolling: false,
         rollConfigs: {
             faces: 20,
-            times: 1
+            times: 1,
+            action: "roll"
+        }
+    })
+    const [ rollBarrage, setRollBarrage ] = useState<{ rolling: boolean, rollBarrageConfigs: { strengh: number, speed: number } }>({
+        rolling: false,
+        rollBarrageConfigs: {
+            strengh: 1,
+            speed: 1
         }
     })
     function closeRollScreen() {
         setRollState({ ...rollState, rolling: false })
+        setRollBarrage({ ...rollBarrage, rolling: false })
     }
     function roll(configs: RollConfigsProps) {
         setRollState({ rolling: true, rollConfigs: configs })
+    }
+    function barrage(configs: { strengh: number, speed: number }) {
+        setRollBarrage({ rolling: true, rollBarrageConfigs: configs })
     }
 
     const [ showing, setShowing ] = useState<"char" | "stand" | "inventory">("char")
@@ -68,9 +80,14 @@ const Playing = () => {
             <li onClick={() => Router.back()}><ImExit/></li>
         </menu>
         {showing == "char" && <Character roll={roll} {...charInfos} />}
-        {showing == "stand" && <Stand roll={roll} stand={standInfos} substand={substandInfos} />}
-        {showing == "inventory" && <Inventory charName={charInfos?.basic.name} {...inventoryInfos} updateInventory={setInventoryInfos} />}
-        {rollState.rolling && <DiceRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}
+        {showing == "stand" && <Stand barrage={barrage} roll={roll} stand={standInfos} substand={substandInfos} />}
+        {showing == "inventory" && <Inventory roll={roll} charName={charInfos?.basic.name} {...inventoryInfos} updateInventory={setInventoryInfos} />}
+        {(rollState.rolling && rollState.rollConfigs.action === "roll") && 
+            <DiceRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}
+        {(rollState.rolling && rollState.rollConfigs.action === "damage") &&
+            <DamageRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}
+        {(rollBarrage.rolling) &&
+            <Barragem barrageConfigs={rollBarrage.rollBarrageConfigs} closeRollScreen={closeRollScreen}/>}
     </MainContainer>
 }
 

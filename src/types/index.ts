@@ -314,7 +314,8 @@ export interface RollConfigsProps {
     times: number,
     bonus?: number,
     advantage?: boolean,
-    disadvantage?: boolean
+    disadvantage?: boolean,
+    action: "roll" | "damage" | "barragem"
 }
 
 

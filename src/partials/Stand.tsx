@@ -17,7 +17,8 @@ import { DoneHab } from '@/components/Ability'
 import { returnRollConfigsByString } from '../func'
 
 interface StandProps extends StandFormValues {
-    roll: (configs: RollConfigsProps) => void
+    roll: (configs: RollConfigsProps) => void,
+    barrage: (configs: { strengh: number, speed: number }) => void
 }
 
 interface PartialStandProps extends StandFormValues {
@@ -47,22 +48,35 @@ interface PartialStandProps extends StandFormValues {
         'sharing': string,
     },
     letters: string,
-    handleAttrClick: MouseEventHandler<HTMLInputElement>,
-    rollDice: MouseEventHandler<HTMLInputElement>
+    handleAttrClick: (e: MouseEvent<HTMLInputElement>, bonus: number) => void,
+    rollDice: MouseEventHandler<HTMLInputElement>,
+    barrage: (configs: { strengh: number, speed: number }) => void
 }
 
 interface ActProps {
     img: string,
     attributes: StandAttributes,
     ability: StandAbility,
-    handleAttrClick: MouseEventHandler<HTMLInputElement>,
+    handleAttrClick: (e: MouseEvent<HTMLInputElement>, bonus: number) => void,
     letters: string,
     num: number,
-    rollDice: MouseEventHandler<HTMLInputElement>
+    rollDice: MouseEventHandler<HTMLInputElement>,
+    barrage: (configs: { strengh: number, speed: number }) => void,
+    combat: {
+        damage: number,
+        shield: number,
+        bonus: number
+    },
+    move: {
+        range: string,
+        apr: number,
+        movement: string,
+        standJump: string
+    }
 }
 
 
-const NormalStand = ({ stand, substand, attributes, nomesHabilidades, letters, standTypes, handleAttrClick, rollDice }: PartialStandProps) => {
+const NormalStand = ({ stand, substand, attributes, nomesHabilidades, letters, standTypes, handleAttrClick, rollDice, barrage }: PartialStandProps) => {
     return <>
         <div className={sheetStyle.attributesArea}>
             <div className={sheetStyle.attrContainer}>
@@ -90,7 +104,8 @@ const NormalStand = ({ stand, substand, attributes, nomesHabilidades, letters, s
                     <input
                         className={sheetStyle.spanContainer}
                         readOnly
-                        defaultValue={`D${stand?.combat.damage}`}
+                        defaultValue={`1D${stand?.combat.damage}`}
+                        onClick={rollDice}
                     />
                 </div>
                 <div>
@@ -133,7 +148,7 @@ const NormalStand = ({ stand, substand, attributes, nomesHabilidades, letters, s
                     <input
                         className={sheetStyle.spanContainer}
                         readOnly
-                        defaultValue={`D${substand?.combat.damage}`}
+                        defaultValue={`1D${substand?.combat.damage}`}
                         onClick={rollDice}
                     />
                 </li>
@@ -163,7 +178,7 @@ const NormalStand = ({ stand, substand, attributes, nomesHabilidades, letters, s
             </ul>
             <h2>Habilidade</h2>
             <div className={standStyles.substandAbilityContainer}>
-                <button className={sheetStyle.rollButton}>BARRAGEM</button>
+                <button className={sheetStyle.rollButton} onClick={() => barrage({ strengh: substand.attributes?.strengh, speed: substand.attributes?.speed })}>BARRAGEM</button>
                 <DoneHab title='PRINCIPAL' infos={substand?.ability} className='substand-done-ability' rollDice={rollDice} />
             </div>
         </div>
@@ -190,7 +205,7 @@ const NormalStand = ({ stand, substand, attributes, nomesHabilidades, letters, s
                 <p>STAND JUMP</p>
                 <span className={sheetStyle.spanContainer}>{ stand?.move.standJump }</span>
             </div>
-            <button className={sheetStyle.rollButton}>BARRAGEM</button>
+            <button className={sheetStyle.rollButton} onClick={() => barrage({ strengh: stand.attributes?.strengh, speed: stand.attributes?.speed })}>BARRAGEM</button>
             <div className={standStyles.abilitys}>
                 {Children.toArray(Object.keys(stand.abilitys ?? {}).map(
                     name => stand.abilitys[name].name && <DoneHab title={nomesHabilidades[name]} rollDice={rollDice} infos={stand.abilitys[name]} />
@@ -202,7 +217,7 @@ const NormalStand = ({ stand, substand, attributes, nomesHabilidades, letters, s
 
 
 
-const Act = ({ attributes, ability, handleAttrClick, letters, num, rollDice }: ActProps) => {
+const Act = ({ attributes, ability, combat, move, barrage, handleAttrClick, letters, num, rollDice }: ActProps) => {
     return <div className={standStyles.act}>
         <h2>ATO {num}</h2>
         <div className={sheetStyle.attributesArea}>
@@ -216,29 +231,74 @@ const Act = ({ attributes, ability, handleAttrClick, letters, num, rollDice }: A
                             className={'attribute'}
                             readOnly
                             id={`act${num}-${id}`}
-                            onClick={handleAttrClick}
+                            onClick={(e) => handleAttrClick(e, combat.bonus)}
                             value={letters[attributes?.[id]]}
                         />
                     </li>))}
                 </ul>
             </div>
         </div>
-        <div>
+        <div className={standStyles.battleArea}>
+            <h2>Batalha</h2>
+            <div className={standStyles.infosContainer}>
+                <div>
+                    <p>DANO</p>
+                    <input
+                        className={sheetStyle.spanContainer}
+                        readOnly
+                        defaultValue={`1D${combat.damage}`}
+                        onClick={rollDice}
+                    />
+                </div>
+                <div>
+                    <p>ARMADURA</p>
+                    <span className={sheetStyle.spanContainer}>{ combat.shield }</span>
+                </div>
+                <div>
+                    <p>BÔNUS</p>
+                    <span className={sheetStyle.spanContainer}>{ combat.bonus }</span>
+                </div>
+            </div>
+        </div>
+        <div className={sheetStyle.movimentArea}>
+            <h2>Movimento</h2>
+            <div className={standStyles.infosContainer}>
+                <div>
+                    <p>ALCANCE</p>
+                    <span className={sheetStyle.spanContainer}>{ move.range }</span>
+                </div>
+                <div>
+                    <p>APR</p>
+                    <span className={sheetStyle.spanContainer}>{ move.apr }</span>
+                </div>
+                <div>
+                    <p>MOVIMENTO</p>
+                    <span className={sheetStyle.spanContainer}>{ move.movement }</span>
+                </div>
+            </div>
+        </div>
+        <div className={standStyles.abilitysArea}>
+            <h2>Habilidades</h2>
+            <div className={standStyles.infosContainer}>
+                <p>STAND JUMP</p>
+                <span className={sheetStyle.spanContainer}>{ move.standJump }</span>
+            </div>
+            <button className={sheetStyle.rollButton} onClick={() => barrage({ strengh: attributes.strengh, speed: attributes.speed })}>BARRAGEM</button>
             <DoneHab title='HABILIDADE' rollDice={rollDice} infos={ability}/>
         </div>
     </div>
 }
 
-const ActStand = ({ stand, letters, handleAttrClick, rollDice }: PartialStandProps) => {
+const ActStand = ({ stand, letters, handleAttrClick, rollDice, barrage }: PartialStandProps) => {
     return <div className={standStyles.actsArea}>
         {Children.toArray([1, 2, 3, 4].map(
-            (act) => <Act num={act} {...stand?.acts?.[`act${act}`]} rollDice={rollDice} letters={letters} handleAttrClick={handleAttrClick} />)
+            (act) => <Act num={act} barrage={barrage} {...stand?.acts?.[`act${act}`]} rollDice={rollDice} letters={letters} handleAttrClick={handleAttrClick} />)
         )}
     </div>
 }
 
 
-const Stand = ({ roll, stand, substand }: StandProps) => {
+const Stand = ({ roll, stand, substand, barrage }: StandProps) => {
     const letters: string = getStandLetters()
     // Funções de Tradução
     const standTypes = {
@@ -278,11 +338,12 @@ const Stand = ({ roll, stand, substand }: StandProps) => {
     const rollDice = (e: MouseEvent<HTMLInputElement>) => {
         roll({
             ...returnRollConfigsByString(e.currentTarget.value),
+            action: "damage"
         })
     }
 
 
-    const handleAttrClick = (e: MouseEvent<HTMLInputElement>) => {
+    const handleAttrClick = (e: MouseEvent<HTMLInputElement>, bonus: number) => {
         const { value } = e.currentTarget
 
         const facesNumber = (x: number) => Math.floor(x**2/2 - 3*x + 6) - 1
@@ -291,7 +352,9 @@ const Stand = ({ roll, stand, substand }: StandProps) => {
             faces: 20,
             times,
             advantage: letters.indexOf(value) > 3,
-            disadvantage: letters.indexOf(value) < 3
+            disadvantage: letters.indexOf(value) < 3,
+            action: "roll",
+            bonus: bonus
         })
     }
 
@@ -317,6 +380,7 @@ const Stand = ({ roll, stand, substand }: StandProps) => {
                 handleAttrClick={handleAttrClick}
                 letters={letters}
                 standTypes={standTypes}
+                barrage={barrage}
             />}
             {isActStand && <ActStand
                 stand={stand}
@@ -327,6 +391,7 @@ const Stand = ({ roll, stand, substand }: StandProps) => {
                 handleAttrClick={handleAttrClick}
                 letters={letters}
                 standTypes={standTypes}
+                barrage={barrage}
             />}
         </> }
     </StandContainer>

@@ -119,3 +119,45 @@ export const Error = styled.p`
     color: #ff5050;
     font-weight: bold;
 `
+
+export const DiceContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    position: fixed;
+    background-color: #030303cf;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    h1 {
+        z-index: 2;
+    }
+    button {
+        z-index: 2;
+        color: #ff4e4e;
+        font-size: 1.5em;
+        font-weight: bold;
+        transition: 500ms font-size;
+        background: transparent;
+
+        &:hover {
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #9c2828;
+            background: transparent;
+        }
+    }
+`;
+
+export function DiceWindowContainer({ closeWindow, children, ...rest }: WindowContainerProps) {
+    return <DiceContainer {...rest}>
+        {children}
+        <button onClick={closeWindow}>FECHAR</button>
+    </DiceContainer>
+}

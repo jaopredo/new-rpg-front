@@ -1,12 +1,13 @@
-import React, { useEffect, useState, HTMLAttributes, MouseEventHandler } from 'react'
+import { Children, useEffect, useState, HTMLAttributes, MouseEventHandler } from 'react'
 import styled /*{ keyframes }*/ from 'styled-components'
 // import { fadeIn } from 'react-animations';
 
 /* CSS */
 import styles from './style.module.scss'
 
-import { WindowContainer } from '../Containers'
+import { DiceWindowContainer, DiceContainer } from '../Containers'
 
+import { RollConfigsProps } from '@/types/*'
 interface RollProps {
     natMax?: boolean,
     minVal?: boolean,
@@ -23,35 +24,23 @@ const RolledValue = styled.div<RollProps>`
 
     background-color: ${
         props =>
-            props.natMax?'#80ff80':props.nat1?'#f13939':'#252525fc'
+            props.natMax?'#80ff80':props.nat1?'#f13939':'#0c0c0c'
     };
     border: ${
         props => props.maxVal?'3px solid'+"#80ff80":
             props.minVal?'3px solid'+"#f13939":'none'
     };
-    width: 100px;
-    height: 100px;
-    font-size: 1.9em;
+    width: 150px;
+    height: 150px;
+    font-size: 2.1em;
     border-radius: 50%;
-`;
-const DiceContainer = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-`;
+`
 
 const handleRollDice = (max: number) => Math.round(Math.random() * (max - 1) + 1)  // Gera número aleatório
 
 interface DiceRollProps extends HTMLAttributes<HTMLDivElement> {
     closeRollScreen: MouseEventHandler,
-    rollConfigs: {
-        faces: number,
-        times: number,
-        bonus?: number,
-        advantage?: boolean,
-        disadvantage?: boolean
-    }
+    rollConfigs: RollConfigsProps
 }
 
 
@@ -92,21 +81,88 @@ export const DiceRoll = ({ children, closeRollScreen, rollConfigs }: DiceRollPro
         setRolls(definitiveRolls)
     }, [])
 
-    return <WindowContainer closeWindow={closeRollScreen}>
+    return <DiceWindowContainer closeWindow={closeRollScreen}>
         <h1>RESULTADO DA ROLAGEM</h1>
         { children }
         <div className={styles.contentContainer}>
-            { React.Children.toArray(
-                rolls.map((roll: RollProps) => <DiceContainer>
+            {Children.toArray(
+                rolls.map((roll: RollProps) => <span>
                     <RolledValue
                         natMax={roll.natMax}
                         nat1={roll.nat1}
                         maxVal={roll.maxVal}
                         minVal={roll.minVal}
                     >{roll.value}</RolledValue>
-                    ({roll.originValue} + {rollConfigs.bonus ?? 0})
-                </DiceContainer>)
-            ) }
+                    <p>({roll.originValue} + {rollConfigs.bonus ?? 0})</p>
+                </span>)
+            )}
         </div>
-    </WindowContainer>;
+    </DiceWindowContainer>
+}
+
+export const DamageRoll = ({ children, closeRollScreen, rollConfigs }: DiceRollProps) => {
+    const [ finalRoll, setFinalRoll ] = useState<RollProps>()
+
+    useEffect(() => {
+        let rolagens = []
+        let rolledValues = []
+        for (let i = 0; i < rollConfigs.times; i++) {
+            let value = handleRollDice(rollConfigs.faces)
+            rolledValues.push(value + (rollConfigs.bonus ?? 0))
+            rolagens.push({
+                originValue: value,
+                value: value + (rollConfigs.bonus ?? 0),
+                nat1: value == 1,
+                natMax: value == rollConfigs.faces,
+            })
+        }
+
+        let somatorio = 0
+        rolagens.map((roll: RollProps) => {
+            somatorio += roll.value
+        })
+
+        setFinalRoll({ value: somatorio })
+    }, [])
+
+    return <DiceWindowContainer closeWindow={closeRollScreen}>
+        <h1>RESULTADO DA ROLAGEM</h1>
+        { children }
+        <div className={styles.contentContainer}>
+            <span>
+                <RolledValue>{finalRoll?.value}</RolledValue>
+            </span>
+        </div>
+    </DiceWindowContainer>
+}
+
+interface BarrageRollProps {
+    closeRollScreen: MouseEventHandler,
+    barrageConfigs: {
+        strengh: number,
+        speed: number
+    }
+}
+
+export const Barragem = ({ closeRollScreen, barrageConfigs }: BarrageRollProps) => {
+    const calcDamage = (x: number) => x/2 + 1/2;
+
+    const [ definitiveRoll, setDefinitiveRoll ] = useState<number>(0);
+    const [ hitPunches, setHitPunches ] = useState<number>(0);
+    useEffect(() => {
+        let rolls = [ handleRollDice(6), handleRollDice(6) ]
+
+        setHitPunches(rolls[0] + rolls[1] + barrageConfigs.speed)
+        //   Valor final       =     1 valor           2 valor
+        setDefinitiveRoll(Math.floor(hitPunches * calcDamage(barrageConfigs.strengh)));
+    }, [hitPunches, barrageConfigs])
+
+    return <DiceWindowContainer closeWindow={closeRollScreen}>
+        <h1>RESULTADO DA BARRAGEM</h1>
+        <div className={styles.contentContainer}>
+            <RolledValue>{definitiveRoll}</RolledValue>
+        </div>
+        <p>SOCOS ACERTADOS {hitPunches}</p>
+        <p>DANO CAUSADO POR SOCO: {calcDamage(barrageConfigs.strengh)}</p>
+    </DiceWindowContainer>
 }

@@ -7,6 +7,9 @@ import { BsFillTrashFill } from 'react-icons/bs'
 import inventoryStyles from './Inventory.module.scss'
 import sheetStyles from '@/sass/Sheet.module.scss'
 
+/* FUNCTRIONS */
+import { returnRollConfigsByString } from '../func'
+
 /* API */
 import { deleteItem } from '@/api/inventory'
 
@@ -15,10 +18,11 @@ import { InventoryContainer } from '@/components/Containers'
 import { NewItemForm, NewWeaponForm } from '@/components/NewItemForms'
 
 /* TYPES */
-import { InventoryType } from '../types'
+import { InventoryType, RollConfigsProps } from '../types'
 interface InventoryProps extends InventoryType {
     charName: string,
-    updateInventory: Dispatch<SetStateAction<InventoryType>>
+    updateInventory: Dispatch<SetStateAction<InventoryType>>,
+    roll: (rollConfigs: RollConfigsProps) => void
 }
 
 const BagsList = styled.ul`
@@ -30,7 +34,7 @@ const BagsList = styled.ul`
     font-size: 1.3em;
 `
 
-const Inventory = ({ items, charName, updateInventory }: InventoryProps) => {
+const Inventory = ({ items, charName, updateInventory, roll }: InventoryProps) => {
     const [ showNewItem, setShowNewItem ] = useState<boolean>(false)
     const [ showNewWeapon, setShowNewWeapon ] = useState<boolean>(false)
 
@@ -147,11 +151,23 @@ const Inventory = ({ items, charName, updateInventory }: InventoryProps) => {
                         item => item.weapon && <tr>
                             <td>{item.name}</td>
                             <td>{weaponTypes[item.tipo]}</td>
-                            <td className={inventoryStyles.damageWeapon}>{item.damage}</td>
-                            <td className='damage-weapon'>{item.damage}+1</td>
+                            <td onClick={() => roll({
+                                ...returnRollConfigsByString(item.damage),
+                                action: "damage"
+                            })} className={inventoryStyles.damageWeapon}>{item.damage}</td>
+                            <td onClick={() => {
+                                const configs = {
+                                    ...returnRollConfigsByString(item.damage),
+                                }
+                                roll({
+                                    ...configs,
+                                    times: configs.times + 1,
+                                    action: "damage"
+                                })
+                            }} className={inventoryStyles.damageWeapon}>{item.damage}+1</td>
                             <td>{item.range}</td>
                             <td>{item.weight}</td>
-                            <td style={{ textAlign: 'center' }}>{item.quantity}</td>
+                            <td>{item.quantity}</td>
                         </tr>
                     ))}
                 </tbody>

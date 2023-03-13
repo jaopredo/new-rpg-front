@@ -22,11 +22,11 @@ import { CharacterFormValues, RollConfigsProps } from '@/types/';
 import LevelUpForm from '@/components/LevelUpForm'
 
 interface CharacterProps extends CharacterFormValues {
-    roll: (configs: RollConfigsProps) => void
+    roll: (configs: RollConfigsProps) => void,
 }
 
 const Character = ({ roll, basic, attributes, specialitys, combat, level }: CharacterProps) => {
-    const [ showLevelUpForm, setShowLevelUpForm ] = useState<boolean>()
+    const [ showLevelUpForm, setShowLevelUpForm ] = useState<boolean>(false)
 
     const [ advantages, setAdvantages ] = useState<number>(0)
     const [ disadvantages, setDisadvantages ] = useState<number>(0)
@@ -80,7 +80,8 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                                 times: 1 + (advantages - disadvantages) ** 2 ** 1/2,
                                 bonus: Math.floor(attributes[id] / 2),
                                 advantage: advantages > disadvantages,
-                                disadvantage: disadvantages > advantages
+                                disadvantage: disadvantages > advantages,
+                                action: "roll"
                             })}
                             value={attributes[id]}
                         />
@@ -95,21 +96,22 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                 <thead>
                     <tr><th>Nome</th><th>Check</th></tr>
                 </thead>
-                {Children.toArray(Object.keys(specInfos.current ?? []).map(
+                {Children.toArray(Object.keys(specialitys).map(
                     area => <tbody className={`${area}-container`}>
-                        {Children.toArray(specInfos.current?.[area].map(props => 
+                        {Children.toArray(Object.keys(specialitys[area]).map(props => 
                             <tr onClick={() => {
-                                if (!!specialitys?.[area][props.id]) roll({
+                                if (!!specialitys[area][props]) roll({
                                     faces: 20,
                                     times: 1 + (advantages - disadvantages) ** 2 ** 1/2,
                                     bonus: Math.floor(attributes[area] / 2) + 5,
                                     advantage: advantages > disadvantages,
-                                    disadvantage: disadvantages > advantages
+                                    disadvantage: disadvantages > advantages,
+                                    action: "roll"
                                 })
-                            }} className={`${props.area} ${specialitys?.[area][props.id]&&'have-spec'}`}>
-                                <td>{props.label}</td>
+                            }} className={`${area} ${specialitys[area][props]&&'have-spec'}`}>
+                                <td>{props}</td>
                                 <td><GoVerified style={{
-                                    opacity: Number(!!specialitys?.[area][props.id])
+                                    opacity: Number(!!specialitys[area][props])
                                 }}/></td>
                             </tr>
                         ))}
@@ -154,12 +156,14 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                     faces: 20,
                     times: 1,
                     bonus: Math.floor(Number(attributes.strengh) / 2) + (!!specialitys.strengh.fight?5:0),
+                    action: "roll"
                 })}>CONTRA-ATAQUE</button>
                 <button type="button" className={charStyles.rollButton} onClick={e => roll({
                     faces: basic.fightStyle === "fighter"?6:4,
                     times: 1,
                     bonus: Math.floor(Number(attributes.strengh) / (basic.fightStyle==='fighter'?1:2)),
                     advantage: true,
+                    action: "roll"
                 })
                 }>SOCO</button>
             </div>
@@ -172,13 +176,13 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
             <h2>Dados</h2>
             <Image src={RpgDices} alt="imagens dos dados" useMap='#rpg-dices' />
             <map name="rpg-dices">
-                <area onClick={() => roll({ faces: 100, times: 1 })} alt="1d100" title="1d100" href="#dices-area" coords="42,44,25" shape="circle"/>
-                <area onClick={() => roll({ faces: 10, times: 1 })} alt="1d10" title="1d10" href="#dices-area" coords="101,43,24" shape="circle"/>
-                <area onClick={() => roll({ faces: 12, times: 1 })} alt="1d12" title="1d12" href="#dices-area" coords="160,41,29" shape="circle"/>
-                <area onClick={() => roll({ faces: 20, times: 1 })} alt="1d20" title="1d20" href="#dices-area" coords="228,39,24" shape="circle"/>
-                <area onClick={() => roll({ faces: 4, times: 1 })} alt="1d4" title="1d4" href="#dices-area" coords="65,104,24" shape="circle"/>
-                <area onClick={() => roll({ faces: 6, times: 1 })} alt="1d6" title="1d6" href="#dices-area" coords="143,106,23" shape="circle"/>
-                <area onClick={() => roll({ faces: 8, times: 1 })} alt="1d8" title="1d8" href="#dices-area" coords="212,106,21" shape="circle"/>
+                <area onClick={() => roll({ faces: 100, times: 1, action: "roll" })} alt="1d100" title="1d100" href="#dices-area" coords="42,44,25" shape="circle"/>
+                <area onClick={() => roll({ faces: 10, times: 1, action: "roll" })} alt="1d10" title="1d10" href="#dices-area" coords="101,43,24" shape="circle"/>
+                <area onClick={() => roll({ faces: 12, times: 1, action: "roll" })} alt="1d12" title="1d12" href="#dices-area" coords="160,41,29" shape="circle"/>
+                <area onClick={() => roll({ faces: 20, times: 1, action: "roll" })} alt="1d20" title="1d20" href="#dices-area" coords="228,39,24" shape="circle"/>
+                <area onClick={() => roll({ faces: 4, times: 1, action: "roll" })} alt="1d4" title="1d4" href="#dices-area" coords="65,104,24" shape="circle"/>
+                <area onClick={() => roll({ faces: 6, times: 1, action: "roll" })} alt="1d6" title="1d6" href="#dices-area" coords="143,106,23" shape="circle"/>
+                <area onClick={() => roll({ faces: 8, times: 1, action: "roll" })} alt="1d8" title="1d8" href="#dices-area" coords="212,106,21" shape="circle"/>
             </map>
         </div>
         { showLevelUpForm && <LevelUpForm attributes={attributes} specialitys={specialitys} closeWindow={() => setShowLevelUpForm(false)} /> }

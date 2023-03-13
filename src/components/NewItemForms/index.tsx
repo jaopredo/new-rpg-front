@@ -106,11 +106,14 @@ export function NewWeaponForm({ setShowNewItem, updateInventory }: NewItemFormsP
     const charId = getCookie("charId")
     const { register, handleSubmit } = useForm<Item>({ defaultValues: {
         weapon: true
-    } });
+    } })
 
-    const [ diceValue, setDiceValue ] = useState<string>("false")
+    const [ diceValue, setDiceValue ] = useState<string>("")
+    const [ weaponDistance, setWeaponDistance ] = useState<string>("")
+
     const [ diceNotReadable, setDiceNotReadable ] = useState<boolean>(false)
     const dicesTypes = {
+        custom: "",
         machineGun: '2D10',
         pistol: '1D8',
         shotgun: '4D8',
@@ -119,11 +122,22 @@ export function NewWeaponForm({ setShowNewItem, updateInventory }: NewItemFormsP
         grenade: '4D6',
         body: '1D6',
     }
+    const weaponDistances = {
+        custom: "",
+        machineGun: 800,
+        pistol: 500,
+        shotgun: 20,
+        rifle: 1000,
+        sniper: 3000,
+        grenade: 10,
+        body: 1,
+    }
 
     const onSubmit: SubmitHandler<Item> = async (data) => {
         const newData: Item = {
             ...data,
-            damage: handleDice(data.damage)
+            damage: diceValue?diceValue:handleDice(data.damage),
+            range: weaponDistance?weaponDistance:data.range
         }
         const response = await putItem(charId, newData)
         updateInventory(response)
@@ -132,18 +146,20 @@ export function NewWeaponForm({ setShowNewItem, updateInventory }: NewItemFormsP
 
     useEffect(() => {
         const diceInput = document.getElementById('weapon-damage')
-        if (diceInput) diceInput.value = diceValue ?? '';
+        const weaponInput = document.getElementById('weapon-range')
+        if (diceInput) diceInput.value = diceValue
+        if (weaponInput) weaponInput.value = weaponDistance
     }, [diceValue])
 
     // Função pra mudar o dado quando mudar o tipo de arma
     const handleTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target
         if (value === 'custom') {
-            setDiceValue("")
             setDiceNotReadable(false)
             return
         }
         setDiceValue(dicesTypes[value])
+        setWeaponDistance(weaponDistances[value])
         setDiceNotReadable(true)
     }
 
@@ -169,17 +185,19 @@ export function NewWeaponForm({ setShowNewItem, updateInventory }: NewItemFormsP
         </div>
         <div>
             <label htmlFor="weapon-damage">Dado: </label>
-            <InputMask mask="9D99" type="text" readOnly={diceNotReadable} placeholder="xDxx" id='weapon-damage' {...register('damage', {
+            {!diceNotReadable && <InputMask mask="9D99" type="text" placeholder="xDxx" id='weapon-damage' {...register('damage', {
                 required: true
-            })} />
+            })} />}
+            {diceNotReadable && diceValue}
         </div>
         <div>
             <label htmlFor="weapon-range">Alcance: </label>
-            <input type="number" min={0} id='weapon-range' {...register('range', {
+            {!diceNotReadable && <input type="number" min={0} id='weapon-range' {...register('range', {
                 required: true,
                 valueAsNumber: true,
                 min: 0,
-            })} />
+            })} />}
+            {diceNotReadable && `${weaponDistance}m`}
         </div>
         <textarea placeholder='Descrição' {...register('details', {
             required: true

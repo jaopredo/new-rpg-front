@@ -43,6 +43,10 @@
     tr:hover .delContainer {
         opacity: 1;
     }
+
+    tr, td {
+        text-align: center;
+    }
 }
 
 .addItem {
