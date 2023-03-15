@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, Children, ChangeEvent, FocusEvent } from 'react'
+import { useState, useRef, useEffect, Children, ChangeEvent, FocusEvent, HTMLAttributes } from 'react'
 import { setCookie } from 'cookies-next'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import Router from 'next/router'
@@ -12,12 +12,25 @@ import ErrorParagraph from '@/components/ErrorParagraph'
 
 /* TYPES */
 import {
+    CharacterRaces,
+    CharacterRacesKeys,
+
     CharacterFormValues,
     CharacterInputInfoProps,
     CharacterInputSpecProps,
     
     CharacterAttributes,
-} from '@/types/'
+    CharacterAttrInput,
+    CharacterRacesSelect,
+    CharacterAttributesKeys,
+    CharSpecsValues,
+    CharFightStyleKeys,
+    CharacterFightStyleSelect,
+
+    CharSpecsKeys,
+    CharacterFightAdvantages,
+    CharacterFightAdvantage
+} from '@/types/character'
 
 /* API CONFIGS */
 import {
@@ -39,7 +52,7 @@ export default function RegisterCharacter() {
     const [ charInputInfos, setCharInputInfos ] = useState<CharacterInputInfoProps[]>()
     const [ charSpecsInfos, setCharSpecsInfos ] = useState<CharacterInputSpecProps>()
 
-    const raceAdvantages = useRef<Object>(getLabels().race)  // Objeto que vai ter os textos das vantagens (Raças)
+    const raceAdvantages = useRef<CharacterRaces>(getLabels().race)  // Objeto que vai ter os textos das vantagens (Raças)
     const racesTraduzidas = {
         human: "HUMANO",
         vampire: "VAMPÍRO",
@@ -47,7 +60,14 @@ export default function RegisterCharacter() {
         animal: "ANIMAL"
     }  // Objeto com as traduções (Não ficar em inglês)
 
-    const fightStyleAdvantages = useRef<Object>(getLabels().fightStyle)  // Objeto que vai ter os textos das vantagens (Estilos de Luta)
+    const fightStyleAdvantages = useRef<{
+        none: string;
+        hamon: string;
+        spin: string;
+        fencing: string;
+        shooter: string;
+        fighter: string;
+    }>(getLabels().fightStyle)  // Objeto que vai ter os textos das vantagens (Estilos de Luta)
     const fightsTraduzidos = {
         none: "NENHUM",
         hamon: "HAMON",
@@ -58,14 +78,43 @@ export default function RegisterCharacter() {
     }  // Objeto com a tradução
 
     // Atributos máximos de cada raça
-    const attrMaxInfos = useRef<Object>()
+    const attrMaxInfos = useRef<{ human: number, rockman: number, animal: number, vampire: number }>({
+        human: 0,
+        rockman: 0,
+        animal: 0,
+        vampire: 0
+    })
 
-    const [ raceAttrsInfos, setRaceAttrsInfos ] = useState<Object>({})  // Vantagens de cada raça
-    const [ fightStyleSpecsInfos, setFightStyleSpecsInfos ] = useState<Object>({})  // Vantagens de cada estilo de luta
+    const [ raceAttrsInfos, setRaceAttrsInfos ] = useState<{
+        human: Array<{ attr: CharacterAttributesKeys, value: number }>,
+        rockman: Array<{ attr: CharacterAttributesKeys, value: number }>,
+        animal: Array<{ attr: CharacterAttributesKeys, value: number }>,
+        vampire: Array<{ attr: CharacterAttributesKeys, value: number }>,
+    }>({
+        human: [],
+        rockman: [],
+        animal: [],
+        vampire: []
+    })  // Vantagens de cada raça
+    const [ fightStyleSpecsInfos, setFightStyleSpecsInfos ] = useState<{
+        hamon: CharacterFightAdvantage[],
+        spin: CharacterFightAdvantage[],
+        shooter: CharacterFightAdvantage[],
+        fencing: CharacterFightAdvantage[],
+        fighter: CharacterFightAdvantage[],
+        none: CharacterFightAdvantage[],
+    }>({
+        hamon: [],
+        spin: [],
+        shooter: [],
+        fencing: [],
+        fighter: [],
+        none: []
+    })  // Vantagens de cada estilo de luta
 
     // Informações sobre os pontos gastos
-    const [attrSpentPoints, setAttrSpentPoints] = useState(0);  // Pontos gastos nos atributos
-    const [specSpentPoints, setSpecsSpentPoints] = useState(9);  // Minimo de especialidades
+    const [attrSpentPoints, setAttrSpentPoints] = useState(0)  // Pontos gastos nos atributos
+    const [specSpentPoints, setSpecsSpentPoints] = useState(9)  // Minimo de especialidades
 
 
     const attrMinValues = useRef<CharacterAttributes>(defaultAttrConfigs().character)  // Os valores mínimos de cada atributo
@@ -76,7 +125,7 @@ export default function RegisterCharacter() {
         }
     }
 
-    const actualAttrValues = useRef<Object>(defaultAttrConfigs().character)
+    const actualAttrValues = useRef<CharacterAttributes>(defaultAttrConfigs().character)
     function changeActualValue(value: number, id: string) {  // Muda o valor atual
         actualAttrValues.current = {
             ...actualAttrValues.current,
@@ -141,10 +190,10 @@ export default function RegisterCharacter() {
 
     /* FUNÇÕES DOS INPUTS */
     // Função que lida quando o atributo muda
-    const handleAttrChange = function(e: ChangeEvent<HTMLInputElement>, minValue: number) {
+    const handleAttrChange = function(e: ChangeEvent<CharacterAttrInput>, minValue: number) {
         e.target.value = Number(e.target.value)>attrMax?attrMax.toString():Number(e.target.value)<minValue?minValue.toString():e.target.value
         
-        const { value, id }: HTMLInputElement = e.target;
+        const { value, id }: CharacterAttrInput = e.target;
         setAttrSpentPoints(attrSpentPoints - (actualAttrValues.current?.[id] - Number(value)))
 
         changeActualValue(Number(value), id)
@@ -157,71 +206,73 @@ export default function RegisterCharacter() {
 
 
     // Função que lida quando a raça muda
-    const [ lastRace, setLastRace ] = useState<"human" | "animal" | "rockman" | "vampire">()
-    const handleRaceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const [ lastRace, setLastRace ] = useState<CharacterRacesKeys>("human")
+    const handleRaceChange = (e: ChangeEvent<CharacterRacesSelect>) => {
         const { value: race } = e.target
         setRaceAdvantages(raceAdvantages.current?.[race])  // Muda o texto das vantagens
         setAttrMax(attrMaxInfos.current?.[race])  // Muda até qual valor pode ser colocado
 
         // Retiro as vantagens da última raça colocada
-        raceAttrsInfos?.[lastRace]?.forEach(attr => {
-            const newValue = actualAttrValues.current?.[attr[0]] - attr[1]
-            changeActualValue(newValue, attr[0])
-            setMinValue(1, attr[0])
+        raceAttrsInfos?.[lastRace]?.forEach(function (infos) {
+            const newValue = actualAttrValues.current?.[infos.attr] - infos.value
+            changeActualValue(newValue, infos.attr)
+            setMinValue(1, infos.attr)
             setValue(
-                `attributes.${attr[0]}`,
+                `attributes.${infos.attr}`,
                 newValue
             )
         })
 
         // Para cada raça dentro das raças
-        raceAttrsInfos?.[race].forEach(attr => {  // Eu analiso cada vantagem
+        raceAttrsInfos?.[race].forEach(function(infos) {  // Eu analiso cada vantagem
             // Estrutura
             // [ atributo, bonus ]
             //      0        1
-            const newValue = actualAttrValues.current?.[attr[0]] + attr[1]
-            const newMinValue = 1 + attr[1]
-            changeActualValue(newValue, attr[0])
-            setMinValue(newMinValue,  attr[0])
+            const newValue = actualAttrValues.current?.[infos.attr] + infos.value
+            const newMinValue = 1 + infos.value
+            changeActualValue(newValue, infos.attr)
+            setMinValue(newMinValue, infos.attr)
             setValue(
-                `attributes.${attr[0]}`,
+                `attributes.${infos.attr}`,
                 newValue
             )
         })
 
         // Se a raça for vampíro, eu coloco para que nenhum estilo de luta possa ser colocado
-        const fightSelect = document.getElementById('fightStyle');
+        const fightSelect = document.getElementById('fightStyle')
         if (race === 'vampire' || race === "animal") {
             setValue('basic.fightStyle', 'none')
             Object.keys(fightStyleSpecsInfos || []).map(fs => removeFightStyleSpecs(fs))
-            fightSelect.disabled = true
+            if (fightSelect) fightSelect.disabled = true
         } else {
-            fightSelect.disabled = false
+            if (fightSelect) fightSelect.disabled = false
         }
     }
 
     // Função que lida com a mudança do estilo de luta
-    const [ lastFightStyle, setLastFightStyle ] = useState<string>();
+    const [ lastFightStyle, setLastFightStyle ] = useState<CharFightStyleKeys>("none")
 
-    function removeFightStyleSpecs(fs: string /* FIGHT STYLE */) {
-        fightStyleSpecsInfos[fs]?.forEach(spec => {
-            setValue(`specialitys.${spec[1]}.${spec[0]}`, false)
-            document.getElementById(`${spec[0]}`).disabled = false
+    function removeFightStyleSpecs(fs: CharFightStyleKeys /* FIGHT STYLE */) {
+        fightStyleSpecsInfos[fs]?.forEach(info => {
+            setValue(`specialitys.${info.label}.${info.spec}`, false)
+            const specInput = document.getElementById(`${info.spec}`) as HTMLInputElement
+            if (specInput) specInput.disabled = false
         })
     }
 
-    const handleFightStyleChange = function (e: any) {
-        const { value: fightStyle } = e.target  // Pego o estilo de luta atual
-        setFightAdvs(fightStyleAdvantages.current[fightStyle])  // Mudo o texto
+    const handleFightStyleChange = function (e: ChangeEvent<CharacterFightStyleSelect>) {
+        const { value: fightStyle } = e.currentTarget  // Pego o estilo de luta atual
+        setFightAdvs(fightStyleAdvantages.current?.[fightStyle])  // Mudo o texto
 
         let counter = 0  // Contador para quantos estilos de lutas estão iguais comparando os que ja tem e os que vão ser colocados
         // Trecho de Código para colocar as especialidades das raças (Em desenvolvimento)
         fightStyleSpecsInfos[fightStyle]?.forEach(spec => {
-            if (getValues(`specialitys.${spec?.[1]}.${spec?.[0]}`)) counter += 1
+            if (getValues(`specialitys.${spec.label}.${spec.spec}`)) counter += 1
             setSpecsSpentPoints(specSpentPoints + counter)
 
-            setValue(`specialitys.${spec?.[1]}.${spec?.[0]}`, true)
-            document.getElementById(`${spec?.[0]}`).disabled = true
+            setValue(`specialitys.${spec.label}.${spec.spec}`, true)
+            const specInput = document.getElementById(`${spec.spec}`) as HTMLInputElement
+            if (specInput) specInput.disabled = true
         })
 
         removeFightStyleSpecs(lastFightStyle)
@@ -239,13 +290,13 @@ export default function RegisterCharacter() {
                     <select id='race' {...register('basic.race', { 
                         required: true,
                         onChange: handleRaceChange,
-                    })} onFocus={e => {
-                        setLastRace(e.target.value)
+                    })} onFocus={(e: FocusEvent<CharacterRacesSelect>) => {
+                        setLastRace(e.currentTarget.value)
                         e.target.blur()
                     }}>
                         <option disabled selected> -- SELECIONE -- </option>
-                        {Children.toArray(Object.keys(raceAttrsInfos || []).map(
-                            (adv: string) => <option value={adv}>{racesTraduzidas[adv]}</option>
+                        {Children.toArray((Object.keys(raceAttrsInfos) as Array<keyof typeof raceAttrsInfos>).map(
+                            (race) => <option value={race}>{racesTraduzidas[race]}</option>
                         ))}
                     </select>
                     <p className={styles.beneficts}>Benefícios: {raceAdvs}</p>
@@ -258,13 +309,13 @@ export default function RegisterCharacter() {
                     <select id='fightStyle' {...register('basic.fightStyle', { 
                         required: true,
                         onChange: handleFightStyleChange,
-                    })} onFocus={(e: FocusEvent<HTMLSelectElement>) => {
+                    })} onFocus={(e: FocusEvent<CharacterFightStyleSelect>) => {
                         setLastFightStyle(e.target.value)
                         e.target.blur()
                     }}>
                         <option disabled selected> -- SELECIONE -- </option>
-                        {Children.toArray(Object.keys(fightStyleSpecsInfos || []).map(
-                            (adv: string) => <option value={adv}>{fightsTraduzidos[adv]}</option>
+                        {Children.toArray((Object.keys(fightStyleSpecsInfos) as Array<keyof typeof fightStyleSpecsInfos>).map(
+                            (adv) => <option value={adv}>{fightsTraduzidos[adv]}</option>
                         ))}
                     </select>
                     <p className={styles.beneficts}>Benefícios: {fightAdvs}</p>
@@ -330,9 +381,9 @@ export default function RegisterCharacter() {
                 <thead>
                     <tr><th>Nome</th><th>Check</th></tr>
                 </thead>
-                {Children.toArray(Object.keys(charSpecsInfos ?? []).map(
-                    (area: any) => <tbody>
-                        {Children.toArray(charSpecsInfos?.[area].map(props => <tr className={props.area}>
+                {charSpecsInfos && Children.toArray((Object.keys(charSpecsInfos) as Array<keyof typeof charSpecsInfos>).map(
+                    (area) => <tbody>
+                        {Children.toArray(charSpecsInfos[area].map(props => <tr className={props.area}>
                             <td><label htmlFor={props.id}>{props.label}</label></td>
                             <td><input type='checkbox' id={props.id} {...register(
                                 `specialitys.${props.area}.${props.id}`,
