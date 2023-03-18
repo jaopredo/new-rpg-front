@@ -14,7 +14,10 @@ import { getStand, getSubstand } from '@/api/stand'
 import { getInventory } from '@/api/inventory'
 
 /* TYPES */
-import { CharacterFormValues, CharacterDefaultValues, RollConfigsProps, StandType, SubstandType, InventoryType } from '../types'
+import { CharacterFormValues, CharacterDefaultValues } from '@/types/character'
+import { StandType, SubstandType } from '@/types/stand'
+import { InventoryType } from '@/types/inventory'
+import { RollConfigsProps } from '@/types/index'
 
 /* PARTIALS */
 import Character from '@/partials/Character'
@@ -25,7 +28,7 @@ import Inventory from '@/partials/Inventory'
 import { DiceRoll, DamageRoll, Barragem } from '@/components/Roll'
 
 const Playing = () => {
-    const charId = getCookie("charId")
+    const charId = getCookie("charId") as string
 
     const [ rollState, setRollState ] = useState<{ rolling: boolean, rollConfigs: RollConfigsProps }>({
         rolling: false,
@@ -70,6 +73,7 @@ const Playing = () => {
             setInventoryInfos(await getInventory(charId))
         }
         getData()
+
     }, [])
 
     return <MainContainer>
@@ -79,9 +83,9 @@ const Playing = () => {
             <li onClick={() => setShowing("inventory")}>INVENTÁRIO</li>
             <li onClick={() => Router.back()}><ImExit/></li>
         </menu>
-        {showing == "char" && <Character roll={roll} {...charInfos} />}
-        {showing == "stand" && <Stand barrage={barrage} roll={roll} stand={standInfos} substand={substandInfos} />}
-        {showing == "inventory" && <Inventory roll={roll} charName={charInfos?.basic.name} {...inventoryInfos} updateInventory={setInventoryInfos} />}
+        {(showing == "char" && !!charInfos) && <Character roll={roll} {...charInfos} />}
+        {(showing == "stand" && !!standInfos) && <Stand barrage={barrage} roll={roll} stand={standInfos} substand={substandInfos} />}
+        {(showing == "inventory" && !!inventoryInfos) && <Inventory roll={roll} charName={charInfos?.basic.name} {...inventoryInfos} updateInventory={setInventoryInfos} />}
         {(rollState.rolling && rollState.rollConfigs.action === "roll") && 
             <DiceRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}
         {(rollState.rolling && rollState.rollConfigs.action === "damage") &&

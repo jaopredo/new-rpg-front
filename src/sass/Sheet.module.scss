@@ -20,7 +20,7 @@
 
 .standRegister {
     @extend .charRegister;
-    grid-template-rows: 35vh 8vh auto auto 15vh;
+    grid-template-rows: 50vh 8vh auto auto 15vh;
     grid-template-areas:
         "basic ."
         "attr substand"
@@ -175,6 +175,10 @@
             @include mixins.flex($jc: space-between);
             width: 100%;
             padding: 2px;
+
+            &:hover {
+                cursor: pointer;
+            }
         }
 
         input[type="checkbox"] {
@@ -284,11 +288,9 @@ $nactive: -40;
 
 .name {
     border: none;
-    border-bottom: 1px solid #adadad;
     outline: none;
     font-size: 2.6em;
     text-align: center;
-    width: 100%;
     margin-bottom: 10px;
 }
 
@@ -374,10 +376,18 @@ $rot: 0;
         font-size: 1.2em;
         z-index: -1;
         font-weight: bold;
-        color: rgba(0, 0, 0, 0.568);
+        color: black;
+        background: #ffff;
+        padding: 10px;
+        border-radius: 4px;
+        box-shadow: 0px 0px 10px black;
         transition: opacity .6s;
 
         position: absolute;
+
+        bottom: 0;
+        transform: translateY(100%)
+
     }
 
     input {

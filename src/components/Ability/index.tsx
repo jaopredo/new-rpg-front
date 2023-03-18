@@ -1,3 +1,4 @@
+import { StandAbility, StandAttackEffects } from '@/types/stand'
 import { MouseEventHandler } from 'react'
 import InputMask from 'react-input-mask-next'
 
@@ -40,16 +41,12 @@ const Ability = ({ title, register, abName }: AbilityProps) => {
 
 interface DoneAbilityProps {
     title: string,
-    infos: {
-        name: string,
-        dice: string,
-        effect: string,
-        description: string
-    },
+    infos: StandAbility,
     rollDice: MouseEventHandler<HTMLInputElement>
 }
+
 export function DoneHab({ title, infos, rollDice }: DoneAbilityProps) {
-    const handleEffect = (effect: string) => {
+    const handleEffect = (effect: StandAttackEffects) => {
         const effects = {
             none: 'Nenhum',
             burning: 'Queimar',

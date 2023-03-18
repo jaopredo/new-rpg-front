@@ -2,8 +2,7 @@
 const nextConfig = {
     compiler: {
         // Enables the styled-components SWC transform
-        styledComponents: true,
-        reactAnimations: true
+        styledComponents: true
     },
     images: {
         remotePatterns: [

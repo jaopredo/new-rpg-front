@@ -239,31 +239,41 @@ export interface CharacterFightStyleSelect extends HTMLSelectElement {
     value: CharFightStyleKeys
 }
 
-
-export class CharacterFightAdvantages {
-    label: CharacterAttributesKeys | undefined
-    spec: CharSpecsValues | undefined
-
-    validators = {
-        strengh: [ "athletics", "jump", "fight", "climb" ],
-        dexterity: [ "acrobacy", "stealth", "aim", "dodge", "reflex" ],
-        constituition: [ "force", "imunity", "painResistence" ],
-        mentality: [ "perception", "insight", "mindResistence" ],
-        education: [ "history", "geography", "math", "investigation", "forensic", 
-        "tecnology", "sociology", "art", "physics", "chemistry", "foreignLanguage", "programming", "policy", 
-        "religion", "mechanic", "biology", "medicine" ],
-        social: [ "intimidation", "cheating", "acting", "charm", "sexy", "persuasion" ]
-    }
-
-    constructor(label: CharacterAttributesKeys, spec: CharSpecsValues) {
-        if (this.validators[label].includes(spec)) {
-            this.label = label
-            this.spec = spec
-        }
-    }
+interface CharStrenghSpec {
+    label: "strengh",
+    spec: "athletics"|"jump"|"fight"|"climb"
+}
+interface CharDexteritySpec {
+    label: "dexterity",
+    spec: "acrobacy"|"stealth"|"aim"|"dodge"|"reflex"
+}
+interface CharConstituitionSpec {
+    label: "constituition",
+    spec: "force"|"imunity"|"painResistence"
+}
+interface CharEducationSpec {
+    label: "education",
+    spec: "history"|"geography"|"math"|"investigation"|"forensic"|
+    "tecnology"|"sociology"|"art"|"physics"|"chemistry"|"foreignLanguage"|"programming"|"policy"|
+    "religion"|"mechanic"|"biology"|"medicine"
+}
+interface CharMentalitySpec {
+    label: "mentality",
+    spec: "perception"|"insight"|"mindResistence"
+}
+interface CharSocialSpec {
+    label: "social",
+    spec: "intimidation"|"cheating"|"acting"|"charm"|"sexy"|"persuasion"
 }
 
-export interface CharacterFightAdvantage {
-    label: CharacterAttributesKeys | undefined,
-    spec: CharSpecsValues | undefined
+
+export type CharacterFightAdvantage = CharStrenghSpec | CharDexteritySpec | CharConstituitionSpec |CharEducationSpec | CharMentalitySpec | CharSocialSpec
+
+export type CharFightAdvantagesTypes = {
+    hamon: CharacterFightAdvantage[],
+    spin: CharacterFightAdvantage[],
+    shooter: CharacterFightAdvantage[],
+    fencing: CharacterFightAdvantage[],
+    fighter: CharacterFightAdvantage[],
+    none: CharacterFightAdvantage[],
 }

@@ -167,7 +167,9 @@ export function DiceWindowContainer({ closeWindow, children, ...rest }: WindowCo
 const WindowLoaderContainer = styled.div`
     position: fixed;
     width: 100vw;
-    height: 100vw;
+    height: 100%;
+
+    top: 0;
 
     background: #0c0c0cc5;
 

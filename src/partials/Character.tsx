@@ -10,6 +10,7 @@ import RpgDices from '@/images/dice-vector.png'
 
 /* API */
 import { getCharSpecialitys } from '@/api/config'
+import { characterAttributesTranslate, characterSpecialitysTranslate } from 'src/func/translate'
 
 /* COMPONENTS */
 import { CharContainer } from '@/components/Containers'
@@ -18,7 +19,8 @@ import MentalEnergy from '@/components/MentalEnergy'
 import Level from '@/components/Level'
 
 /* TYPES */
-import { CharacterFormValues, RollConfigsProps } from '@/types/';
+import { CharacterFormValues } from '@/types/character'
+import { RollConfigsProps } from '@/types/index'
 import LevelUpForm from '@/components/LevelUpForm'
 
 interface CharacterProps extends CharacterFormValues {
@@ -30,15 +32,6 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
 
     const [ advantages, setAdvantages ] = useState<number>(0)
     const [ disadvantages, setDisadvantages ] = useState<number>(0)
-
-    const specInfos = useRef()
-
-    useEffect(() => {
-        async function getData() {
-            specInfos.current = await getCharSpecialitys()
-        }
-        getData()
-    }, [])
 
     return <CharContainer>
         <div className={sheetStyles.basicArea}>
@@ -64,11 +57,11 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
             <div className={sheetStyles.attrContainer}>
                 <h3>ATRIBUTOS</h3>
                 <ul className='generic-list'>
-                    {Children.toArray(Object.keys(attributes)?.map((id: string) => <li>
+                    {Children.toArray((Object.keys(attributes) as Array<keyof typeof attributes>)?.map((id) => <li>
                         {/**
                          * INPUT INFOS = {id: 'id', label: 'texto'}
                          */}
-                        <label htmlFor={id}>{id}</label>
+                        <label htmlFor={id}>{characterAttributesTranslate[id]}</label>
                         <input
                             type='number'
                             className={'attribute'}
@@ -96,26 +89,29 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                 <thead>
                     <tr><th>Nome</th><th>Check</th></tr>
                 </thead>
-                {Children.toArray(Object.keys(specialitys).map(
-                    area => <tbody className={`${area}-container`}>
-                        {Children.toArray(Object.keys(specialitys[area]).map(props => 
-                            <tr onClick={() => {
-                                if (!!specialitys[area][props]) roll({
-                                    faces: 20,
-                                    times: 1 + (advantages - disadvantages) ** 2 ** 1/2,
-                                    bonus: Math.floor(attributes[area] / 2) + 5,
-                                    advantage: advantages > disadvantages,
-                                    disadvantage: disadvantages > advantages,
-                                    action: "roll"
-                                })
-                            }} className={`${area} ${specialitys[area][props]&&'have-spec'}`}>
-                                <td>{props}</td>
-                                <td><GoVerified style={{
-                                    opacity: Number(!!specialitys[area][props])
-                                }}/></td>
-                            </tr>
-                        ))}
-                    </tbody>
+                {Children.toArray((Object.keys(specialitys) as Array<keyof typeof specialitys>).map(
+                    area => {
+                        const actualSpecs = specialitys[area]
+                        return <tbody className={`${area}-container`}>
+                            {Children.toArray((Object.keys(actualSpecs) as Array<keyof typeof actualSpecs>).map(props => 
+                                <tr onClick={() => {
+                                    if (!!actualSpecs[props]) roll({
+                                        faces: 20,
+                                        times: 1 + (advantages - disadvantages) ** 2 ** 1/2,
+                                        bonus: Math.floor(attributes[area] / 2) + 5,
+                                        advantage: advantages > disadvantages,
+                                        disadvantage: disadvantages > advantages,
+                                        action: "roll"
+                                    })
+                                }} className={`${area} ${actualSpecs[props]&&'have-spec'}`}>
+                                    <td>{characterSpecialitysTranslate[props]}</td>
+                                    <td><GoVerified style={{
+                                        opacity: Number(!!actualSpecs[props])
+                                    }}/></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    }
                 ))}
             </table>
         </div>

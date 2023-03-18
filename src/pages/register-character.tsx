@@ -9,6 +9,7 @@ import styles from '@/sass/Sheet.module.scss'
 import MainContainer from '@/components/MainContainer'
 import PointsContainer from '@/components/PointsContainer'
 import ErrorParagraph from '@/components/ErrorParagraph'
+import { LoaderWindowContainer } from '@/components/Containers'
 
 /* TYPES */
 import {
@@ -27,9 +28,7 @@ import {
     CharFightStyleKeys,
     CharacterFightStyleSelect,
 
-    CharSpecsKeys,
-    CharacterFightAdvantages,
-    CharacterFightAdvantage
+    CharFightAdvantagesTypes
 } from '@/types/character'
 
 /* API CONFIGS */
@@ -47,6 +46,7 @@ import {
 import { registerCharacter } from '@/api/character'
 
 export default function RegisterCharacter() {
+    const [ isLoading, setIsloading ] = useState<boolean>(false)
     const [ errorMessage, setErrorMessage ] = useState<string>("")
 
     const [ charInputInfos, setCharInputInfos ] = useState<CharacterInputInfoProps[]>()
@@ -96,14 +96,7 @@ export default function RegisterCharacter() {
         animal: [],
         vampire: []
     })  // Vantagens de cada raça
-    const [ fightStyleSpecsInfos, setFightStyleSpecsInfos ] = useState<{
-        hamon: CharacterFightAdvantage[],
-        spin: CharacterFightAdvantage[],
-        shooter: CharacterFightAdvantage[],
-        fencing: CharacterFightAdvantage[],
-        fighter: CharacterFightAdvantage[],
-        none: CharacterFightAdvantage[],
-    }>({
+    const [ fightStyleSpecsInfos, setFightStyleSpecsInfos ] = useState<CharFightAdvantagesTypes>({
         hamon: [],
         spin: [],
         shooter: [],
@@ -164,11 +157,14 @@ export default function RegisterCharacter() {
     const { register, handleSubmit, setValue, getValues } = useForm<CharacterFormValues>()
 
     const onSubmit: SubmitHandler<CharacterFormValues> = async function (data) {
+        setIsloading(true)
         if (specSpentPoints != 0) {
             setErrorMessage("Use todas suas especialidades!")
+            setIsloading(false)
             return
         }
         if (attrSpentPoints != attrPoints) {
+            setIsloading(false)
             setErrorMessage("Você deve utilizar a quantidade correta de pontos nos atributos")
             return
         }
@@ -239,7 +235,7 @@ export default function RegisterCharacter() {
         })
 
         // Se a raça for vampíro, eu coloco para que nenhum estilo de luta possa ser colocado
-        const fightSelect = document.getElementById('fightStyle')
+        const fightSelect = document.getElementById('fightStyle') as HTMLSelectElement
         if (race === 'vampire' || race === "animal") {
             setValue('basic.fightStyle', 'none')
             Object.keys(fightStyleSpecsInfos || []).map(fs => removeFightStyleSpecs(fs))
@@ -279,126 +275,129 @@ export default function RegisterCharacter() {
     }
 
 
-    return <MainContainer><form onSubmit={handleSubmit(onSubmit)} className={styles.charRegister}>
-        <fieldset className={styles.basicFieldset}>
-            <ul>
-                <li>
-                    <input type='text' className={styles.name} {...register('basic.name', { required: true })} />
-                </li>
-                <li>
-                    <label htmlFor='race'>Raça: </label>
-                    <select id='race' {...register('basic.race', { 
-                        required: true,
-                        onChange: handleRaceChange,
-                    })} onFocus={(e: FocusEvent<CharacterRacesSelect>) => {
-                        setLastRace(e.currentTarget.value)
-                        e.target.blur()
-                    }}>
-                        <option disabled selected> -- SELECIONE -- </option>
-                        {Children.toArray((Object.keys(raceAttrsInfos) as Array<keyof typeof raceAttrsInfos>).map(
-                            (race) => <option value={race}>{racesTraduzidas[race]}</option>
-                        ))}
-                    </select>
-                    <p className={styles.beneficts}>Benefícios: {raceAdvs}</p>
-                    <p className={styles.warning}>
-                        Esses benefícios vão ser calculados automaticamente quando o formulário for enviado!
-                    </p>
-                </li>
-                <li>
-                    <label htmlFor='fightStyle'>Estilo de Luta: </label>
-                    <select id='fightStyle' {...register('basic.fightStyle', { 
-                        required: true,
-                        onChange: handleFightStyleChange,
-                    })} onFocus={(e: FocusEvent<CharacterFightStyleSelect>) => {
-                        setLastFightStyle(e.target.value)
-                        e.target.blur()
-                    }}>
-                        <option disabled selected> -- SELECIONE -- </option>
-                        {Children.toArray((Object.keys(fightStyleSpecsInfos) as Array<keyof typeof fightStyleSpecsInfos>).map(
-                            (adv) => <option value={adv}>{fightsTraduzidos[adv]}</option>
-                        ))}
-                    </select>
-                    <p className={styles.beneficts}>Benefícios: {fightAdvs}</p>
-                    <p className={styles.warning}>
-                        Esses benefícios vão ser calculados automaticamente quando o formulário for enviado!
-                    </p>
-                </li>
-                <li>
-                    <label htmlFor='age'>Idade: </label>
-                    <input id='age' type='number' min={20} {...register('basic.age', {
-                        required: true,
-                        valueAsNumber: true,
-                        min: 20,
-                    })} />
-                </li>
-                <li>
-                    <label htmlFor='occupation'>Profissão: </label>
-                    <input id='occupation' type="text" {...register('basic.occupation', { required: true })}/>
-                </li>
-                <li>
-                    <label htmlFor="char-img">Link da Imagem: </label>
-                    <input id="char-img" type="text" {...register('img')} />
-                </li>
-            </ul> 
-        </fieldset>
-        <fieldset className={styles.attrFieldset}>
-            <div className='points-info-container'>
-                <p>Pontos Gastos <PointsContainer error={attrPointError}>{attrSpentPoints}</PointsContainer></p>
-                <p>Máximo <PointsContainer>{attrPoints}</PointsContainer></p>
-            </div>
-            {/* DIV QUE CONTÉM OS ATRIBUTOS */}
-            <div className={styles.attrContainer}>
-                <h3>ATRIBUTOS</h3>
-                <ul className='generic-list'>
-                    {Children.toArray(charInputInfos?.map((props) => <li>
-                        {/**
-                         * INPUT INFOS = {id: 'id', label: 'texto'}
-                         */}
-                        <label htmlFor={props.id}>{props.label}</label>
-                        <input
-                            type='number'
-                            className={'attribute'}
-                            min={attrMinValues.current[props.id]}
-                            max={attrMax}
-                            defaultValue={1}
-                            id={props.id}
-                            {...register(`attributes.${props.id}`, {
-                                required: true,
-                                valueAsNumber: true,
-                                min: -2,
-                                onChange: e => handleAttrChange(e, attrMinValues.current[props.id]),
-                            })}
-                        />
+    return <MainContainer>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.charRegister}>
+            <fieldset className={styles.basicFieldset}>
+                <ul>
+                    <li>
+                        <input type='text' className={styles.name} {...register('basic.name', { required: true })} />
                     </li>
+                    <li>
+                        <label htmlFor='race'>Raça: </label>
+                        <select id='race' {...register('basic.race', { 
+                            required: true,
+                            onChange: handleRaceChange,
+                        })} onFocus={(e: FocusEvent<CharacterRacesSelect>) => {
+                            setLastRace(e.currentTarget.value)
+                            e.target.blur()
+                        }}>
+                            <option disabled selected> -- SELECIONE -- </option>
+                            {Children.toArray((Object.keys(raceAttrsInfos) as Array<keyof typeof raceAttrsInfos>).map(
+                                (race) => <option value={race}>{racesTraduzidas[race]}</option>
+                            ))}
+                        </select>
+                        <p className={styles.beneficts}>Benefícios: {raceAdvs}</p>
+                        <p className={styles.warning}>
+                            Esses benefícios vão ser calculados automaticamente quando o formulário for enviado!
+                        </p>
+                    </li>
+                    <li>
+                        <label htmlFor='fightStyle'>Estilo de Luta: </label>
+                        <select id='fightStyle' {...register('basic.fightStyle', { 
+                            required: true,
+                            onChange: handleFightStyleChange,
+                        })} onFocus={(e: FocusEvent<CharacterFightStyleSelect>) => {
+                            setLastFightStyle(e.target.value)
+                            e.target.blur()
+                        }}>
+                            <option disabled selected> -- SELECIONE -- </option>
+                            {Children.toArray((Object.keys(fightStyleSpecsInfos) as Array<keyof typeof fightStyleSpecsInfos>).map(
+                                (adv) => <option value={adv}>{fightsTraduzidos[adv]}</option>
+                            ))}
+                        </select>
+                        <p className={styles.beneficts}>Benefícios: {fightAdvs}</p>
+                        <p className={styles.warning}>
+                            Esses benefícios vão ser calculados automaticamente quando o formulário for enviado!
+                        </p>
+                    </li>
+                    <li>
+                        <label htmlFor='age'>Idade: </label>
+                        <input id='age' type='number' min={20} {...register('basic.age', {
+                            required: true,
+                            valueAsNumber: true,
+                            min: 20,
+                        })} />
+                    </li>
+                    <li>
+                        <label htmlFor='occupation'>Profissão: </label>
+                        <input id='occupation' type="text" {...register('basic.occupation', { required: true })}/>
+                    </li>
+                    <li>
+                        <label htmlFor="char-img">Link da Imagem: </label>
+                        <input id="char-img" type="text" {...register('img')} />
+                    </li>
+                </ul> 
+            </fieldset>
+            <fieldset className={styles.attrFieldset}>
+                <div className='points-info-container'>
+                    <p>Pontos Gastos <PointsContainer error={attrPointError}>{attrSpentPoints}</PointsContainer></p>
+                    <p>Máximo <PointsContainer>{attrPoints}</PointsContainer></p>
+                </div>
+                {/* DIV QUE CONTÉM OS ATRIBUTOS */}
+                <div className={styles.attrContainer}>
+                    <h3>ATRIBUTOS</h3>
+                    <ul className='generic-list'>
+                        {Children.toArray(charInputInfos?.map((props) => <li>
+                            {/**
+                             * INPUT INFOS = {id: 'id', label: 'texto'}
+                             */}
+                            <label htmlFor={props.id}>{props.label}</label>
+                            <input
+                                type='number'
+                                className={'attribute'}
+                                min={attrMinValues.current[props.id]}
+                                max={attrMax}
+                                defaultValue={1}
+                                id={props.id}
+                                {...register(`attributes.${props.id}`, {
+                                    required: true,
+                                    valueAsNumber: true,
+                                    min: -2,
+                                    onChange: e => handleAttrChange(e, attrMinValues.current[props.id]),
+                                })}
+                            />
+                        </li>
+                        ))}
+                    </ul>
+                </div>
+            </fieldset>
+            <fieldset className={styles.specsFieldset}>
+                <h3>Especialidades</h3>
+                <PointsContainer error={specPointError}>{specSpentPoints}</PointsContainer>
+                <table>
+                    <thead>
+                        <tr><th>Nome</th><th>Check</th></tr>
+                    </thead>
+                    {charSpecsInfos && Children.toArray((Object.keys(charSpecsInfos) as Array<keyof typeof charSpecsInfos>).map(
+                        (area) => <tbody>
+                            {Children.toArray(charSpecsInfos[area].map(props => <tr className={props.area}>
+                                <td><label htmlFor={props.id}>{props.label}</label></td>
+                                <td><input type='checkbox' id={props.id} {...register(
+                                    `specialitys.${props.area}.${props.id}`,
+                                    {
+                                        onChange: handleSpecChange
+                                    }
+                                )}/></td>
+                            </tr>))}
+                        </tbody>
                     ))}
-                </ul>
+                </table>
+            </fieldset>
+            <div className={styles.buttonContainer}>
+                <ErrorParagraph>{errorMessage}</ErrorParagraph>
+                <button className={styles.submitButton} type='submit'>ENVIAR</button>
             </div>
-        </fieldset>
-        <fieldset className={styles.specsFieldset}>
-            <h3>Especialidades</h3>
-            <PointsContainer error={specPointError}>{specSpentPoints}</PointsContainer>
-            <table>
-                <thead>
-                    <tr><th>Nome</th><th>Check</th></tr>
-                </thead>
-                {charSpecsInfos && Children.toArray((Object.keys(charSpecsInfos) as Array<keyof typeof charSpecsInfos>).map(
-                    (area) => <tbody>
-                        {Children.toArray(charSpecsInfos[area].map(props => <tr className={props.area}>
-                            <td><label htmlFor={props.id}>{props.label}</label></td>
-                            <td><input type='checkbox' id={props.id} {...register(
-                                `specialitys.${props.area}.${props.id}`,
-                                {
-                                    onChange: handleSpecChange
-                                }
-                            )}/></td>
-                        </tr>))}
-                    </tbody>
-                ))}
-            </table>
-        </fieldset>
-        <div className={styles.buttonContainer}>
-            <ErrorParagraph>{errorMessage}</ErrorParagraph>
-            <button className={styles.submitButton} type='submit'>ENVIAR</button>
-        </div>
-    </form></MainContainer>
+        </form>
+        { isLoading && <LoaderWindowContainer />}
+    </MainContainer>
 }

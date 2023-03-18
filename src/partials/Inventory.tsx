@@ -18,7 +18,9 @@ import { InventoryContainer } from '@/components/Containers'
 import { NewItemForm, NewWeaponForm } from '@/components/NewItemForms'
 
 /* TYPES */
-import { InventoryType, RollConfigsProps } from '../types'
+import { InventoryType } from '@/types/inventory'
+import { RollConfigsProps } from '@/types/index'
+
 interface InventoryProps extends InventoryType {
     charName: string,
     updateInventory: Dispatch<SetStateAction<InventoryType>>,
@@ -35,6 +37,8 @@ const BagsList = styled.ul`
 `
 
 const Inventory = ({ items, charName, updateInventory, roll }: InventoryProps) => {
+    const charId = getCookie('charId') as string
+
     const [ showNewItem, setShowNewItem ] = useState<boolean>(false)
     const [ showNewWeapon, setShowNewWeapon ] = useState<boolean>(false)
 
@@ -64,9 +68,7 @@ const Inventory = ({ items, charName, updateInventory, roll }: InventoryProps) =
     }, [ usedSpaces, totalSpaces ])
 
     const handleDeleteItem = async (itemId: string) => {
-        console.log(itemId)
-        const response = await deleteItem(itemId, getCookie("charId"))
-        console.log(response)
+        const response = await deleteItem(itemId, charId)
         if (!response.error) updateInventory(response)
     }
 
@@ -101,9 +103,9 @@ const Inventory = ({ items, charName, updateInventory, roll }: InventoryProps) =
         <div className={sheetStyles.basicArea}>
             <h1 className={sheetStyles.name}>{charName}</h1>
             <BagsList>
-                {Children.toArray(Object.entries(bags).map(bag => <li>
-                    <input onChange={() => setTotalSpaces(bag[1])} type="radio" name="bag-spaces" id={bag[0]} />
-                    <label htmlFor={bag[0]}>{bagTranslate[bag[0]]}</label>
+                {Children.toArray((Object.keys(bags) as Array<keyof typeof bags>).map(bag => <li>
+                    <input onChange={() => setTotalSpaces(bags[bag])} type="radio" name="bag-spaces" id={bag[0]} />
+                    <label htmlFor={bag[0]}>{bagTranslate[bag]}</label>
                 </li>))}
             </BagsList>
         </div>

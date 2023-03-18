@@ -10,7 +10,7 @@ import styles from './style.module.scss'
 import { getCharacter, deleteCharacter } from '@/api/character'
 
 /* TYPES */
-import { CharacterFormValues } from '@/types/*'
+import { CharacterFormValues } from '@/types/character'
 interface CharProfileProps {
     id: string,
     onClick: MouseEventHandler
@@ -39,7 +39,7 @@ const CharacterProfile = ({ id, onClick }: CharProfileProps) => {
             setCookie("charId", id)
             onClick(e)
         }}>
-            <h2>{charInfos?.basic?.name}</h2>
+            <h3>{charInfos?.basic?.name}</h3>
         </div>
     </div>
 }

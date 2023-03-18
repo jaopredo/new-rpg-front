@@ -34,7 +34,6 @@ const Logged = () => {
 
     return <MainContainer>
         <h1>{playerName}</h1>
-        <h2>Crie seus personagens!</h2>
         <ul className={styles.profilesList}>
             {Children.toArray(charList?.map((id: string) => <CharacterProfile id={id} onClick={handleProfileClick}/>))}
             <AiOutlineUserAdd onClick={() => {
