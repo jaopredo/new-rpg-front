@@ -1,5 +1,4 @@
 import { useState, useEffect, Children, MouseEvent, MouseEventHandler } from 'react'
-import Image from 'next/image'
 
 import sheetStyle from '@/sass/Sheet.module.scss'
 import standStyles from './Stand.module.scss'
@@ -16,6 +15,7 @@ import { RollConfigsProps } from '@/types/index'
 import { StandContainer, AttrContainer, ImageContainer } from '@/components/Containers'
 import { DoneHab } from '@/components/Ability'
 import { returnRollConfigsByString } from '../func'
+import ImageForm from '@/components/ImageForm'
 
 interface StandProps extends StandFormValues {
     roll: (configs: RollConfigsProps) => void,
@@ -124,6 +124,9 @@ const Substand = ({ substand, rollDice, handleAttrClick, barrage, letters }: Sub
             <DoneHab title='PRINCIPAL' infos={substandAbility} rollDice={rollDice} />
         </div>
         <h2>Imagem</h2>
+        {!substandBasic.img && <div className={standStyles.imageFormContainer}>
+            <ImageForm type="substand" substandId={substand._id} />
+        </div>}
         <ImageContainer src={substandBasic.img ?? ''}/>
     </div>
 }
@@ -134,7 +137,7 @@ const NormalStand = ({ stand, substand, letters, handleAttrClick, rollDice, barr
     return <>
         <div className={sheetStyle.attributesArea}>
             <AttrContainer bgImg={stand.basic.img} className={sheetStyle.attrContainer}>
-                {!stand.basic.img && <h3>ATRIBUTOS</h3>}
+                {!stand.basic.img && <ImageForm type="stand" standId={stand._id} />}
                 <ul>
                     {Children.toArray((Object.keys(standAttributes) as Array<keyof typeof standAttributes>)?.map(id => <li>
                         <label htmlFor={id}>{standAttributesTranslate[id]}</label>
@@ -211,7 +214,6 @@ const NormalStand = ({ stand, substand, letters, handleAttrClick, rollDice, barr
         </div>
     </>
 }
-
 
 
 const Act = ({ attributes, ability, combat, move, barrage, handleAttrClick, letters, num, rollDice, img }: ActProps) => {

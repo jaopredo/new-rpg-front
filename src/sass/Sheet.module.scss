@@ -331,9 +331,9 @@ $rot: 0;
     @include mixins.flex();
 
     h3 {
-        color: white;
-        font-size: 2vw;
         position: absolute;
+        color: white;
+        font-size: 1.5em;
     }
 
     /* CONFIGURANDO LISTA PARA DISTRIBUIR EM VOLTA DO CÍRCULO */

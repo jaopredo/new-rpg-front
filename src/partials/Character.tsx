@@ -16,17 +16,20 @@ import { CharContainer, AttrContainer } from '@/components/Containers'
 import Life from '@/components/Life'
 import MentalEnergy from '@/components/MentalEnergy'
 import Level from '@/components/Level'
+import ImageForm from '@/components/ImageForm'
 
 /* TYPES */
 import { CharacterFormValues } from '@/types/character'
 import { RollConfigsProps } from '@/types/index'
 import LevelUpForm from '@/components/LevelUpForm'
+import { getCookie } from 'cookies-next'
 
 interface CharacterProps extends CharacterFormValues {
     roll: (configs: RollConfigsProps) => void,
 }
 
 const Character = ({ roll, basic, attributes, specialitys, combat, level, img }: CharacterProps) => {
+    const charId = getCookie('charId') as string
     const [ showLevelUpForm, setShowLevelUpForm ] = useState<boolean>(false)
 
     const [ advantages, setAdvantages ] = useState<number>(0)
@@ -54,12 +57,9 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level, img }:
                 </li>
             </ul>
             <AttrContainer bgImg={img} className={sheetStyles.attrContainer}>
-                { !img && <h3>ATRIBUTOS</h3> }
+                { !img && <ImageForm type="char" charId={charId} /> }
                 <ul className='generic-list'>
                     {Children.toArray((Object.keys(attributes) as Array<keyof typeof attributes>)?.map((id) => <li>
-                        {/**
-                         * INPUT INFOS = {id: 'id', label: 'texto'}
-                         */}
                         <label htmlFor={id}>{characterAttributesTranslate[id]}</label>
                         <input
                             type='number'

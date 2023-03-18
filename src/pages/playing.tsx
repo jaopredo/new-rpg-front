@@ -62,6 +62,7 @@ const Playing = () => {
     const [ charInfos, setCharInfos ] = useState<CharacterFormValues>(CharacterDefaultValues)
     const [ standInfos, setStandInfos ] = useState<StandType>()
     const [ substandInfos, setSubstandInfos ] = useState<SubstandType>({
+        _id: '',
         basic: {
             name: "",
             standType: 'short-range',

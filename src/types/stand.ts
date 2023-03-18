@@ -36,6 +36,7 @@ export interface StandMove {
 }
 
 export type StandType = {
+    _id: string,
     basic: {
         name: string,
         standType: StandTypes,

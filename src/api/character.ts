@@ -1,6 +1,6 @@
 import AxiosService from "."
 
-import { CharacterFormValues } from "../types"
+import { CharacterFormValues } from "@/types/character"
 
 import { returnAuthHeader } from "src/func"
 
@@ -36,5 +36,11 @@ export async function saveMentalEnergy(id: String, value: Number) {
 }
 export async function saveLife(id: String, value: Number) {
     const response = await AxiosService.patch(`/character/life?id=${id}`, { life: value }, { headers: returnAuthHeader() })
+    return response.data
+}
+
+
+export async function updateCharacterImage(id: String, img: String) {
+    const response = await AxiosService.patch(`/character/image?charId=${id}`, { img }, { headers: returnAuthHeader() })
     return response.data
 }
