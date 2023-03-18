@@ -36,11 +36,11 @@ export interface StandMove {
 }
 
 export type StandType = {
-    img?: string,
     basic: {
         name: string,
         standType: StandTypes,
         weakPoint: string,
+        img?: string,
     },
     attributes?: StandAttributes,
     abilitys?: {

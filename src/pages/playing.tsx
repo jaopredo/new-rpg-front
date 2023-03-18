@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getCookie } from 'cookies-next'
 import { ImExit } from 'react-icons/im'
 import Router from 'next/router'
+import Link from 'next/link'
 
 import playStyles from '@/sass/Playing.module.scss'
 
@@ -60,15 +61,47 @@ const Playing = () => {
 
     const [ charInfos, setCharInfos ] = useState<CharacterFormValues>(CharacterDefaultValues)
     const [ standInfos, setStandInfos ] = useState<StandType>()
-    const [ substandInfos, setSubstandInfos ] = useState<SubstandType>()
+    const [ substandInfos, setSubstandInfos ] = useState<SubstandType>({
+        basic: {
+            name: "",
+            standType: 'short-range',
+            weakPoint: '',
+        },
+        attributes: {
+            strengh: 0,
+            speed: 0,
+            development: 0,
+            durability: 0,
+            precision: 0,
+            range: 0
+        },
+        ability: {
+            name: '',
+            description: '',
+            dice: '',
+            effect: 'bullet'
+        },
+        combat: {
+            bonus: 0,
+            damage: 0,
+            shield: 0
+        },
+        move: {
+            apr: 0,
+            movement: '',
+            range: '',
+            standJump: ''
+        }
+    })
     const [ inventoryInfos, setInventoryInfos ] = useState<InventoryType>({ items: [] })
 
     useEffect(() => {
         async function getData() {
             setCharInfos(await getCharacter(charId))
             const stand = await getStand(charId)
+
             setStandInfos(stand)
-            setSubstandInfos(await getSubstand(stand?.id))
+            setSubstandInfos(await getSubstand(charId))
 
             setInventoryInfos(await getInventory(charId))
         }
@@ -85,6 +118,9 @@ const Playing = () => {
         </menu>
         {(showing == "char" && !!charInfos) && <Character roll={roll} {...charInfos} />}
         {(showing == "stand" && !!standInfos) && <Stand barrage={barrage} roll={roll} stand={standInfos} substand={substandInfos} />}
+        {(showing == "stand" && !!!standInfos) && <div>
+            NENHUM STAND ENCONTRADO, DESEJA <Link href='/register-stand'>CRIAR UM NOVO STAND?</Link>
+        </div>}
         {(showing == "inventory" && !!inventoryInfos) && <Inventory roll={roll} charName={charInfos?.basic.name} {...inventoryInfos} updateInventory={setInventoryInfos} />}
         {(rollState.rolling && rollState.rollConfigs.action === "roll") && 
             <DiceRoll rollConfigs={rollState.rollConfigs} closeRollScreen={closeRollScreen}/>}

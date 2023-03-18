@@ -6,6 +6,7 @@ import { fadeIn } from 'react-animations'
 
 import styles from './style.module.scss'
 
+
 export const CharContainer = styled.div`
     display: grid;
     gap: 10px;
@@ -86,7 +87,6 @@ export const InventoryContainer = styled.div`
         "weapons";
 `
 
-
 const WindowContainerDiv = styled.div`
     background: #636363;
     text-align: center;
@@ -110,6 +110,7 @@ interface WindowContainerProps extends HTMLAttributes<HTMLDivElement> {
     closeWindow: MouseEventHandler
 }
 
+
 export function WindowContainer({ closeWindow, children, ...rest }: WindowContainerProps) {
     return <WindowContainerDiv {...rest}>
         <MdClose className={styles.closeIcon} onClick={closeWindow}/>
@@ -117,10 +118,12 @@ export function WindowContainer({ closeWindow, children, ...rest }: WindowContai
      </WindowContainerDiv>
 }
 
+
 export const Error = styled.p`
     color: #ff5050;
     font-weight: bold;
 `
+
 
 export const DiceContainer = styled.div`
     display: flex;
@@ -164,6 +167,7 @@ export function DiceWindowContainer({ closeWindow, children, ...rest }: WindowCo
     </DiceContainer>
 }
 
+
 const WindowLoaderContainer = styled.div`
     position: fixed;
     width: 100vw;
@@ -183,3 +187,20 @@ const WindowLoaderContainer = styled.div`
 export function LoaderWindowContainer() {
     return <WindowLoaderContainer><MoonLoader color="#e9e9e9"/></WindowLoaderContainer>
 }
+
+
+export const AttrContainer = styled.div<{bgImg?: string}>`
+    background-image: url(${props => props.bgImg});
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+`
+
+export const ImageContainer = styled.div<{ src: string }>`
+    background-image: url(${props => props.src});
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+    width: 100%;
+    height: 200px;
+`

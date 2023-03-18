@@ -4,6 +4,8 @@ import InputMask from 'react-input-mask-next'
 
 import styles from './style.module.scss'
 
+import { handleDice } from '@/func/*'
+
 interface AbilityProps {
     title: string,
     register: Function,
@@ -73,7 +75,7 @@ export function DoneHab({ title, infos, rollDice }: DoneAbilityProps) {
                 <p>DADO</p>
                 <input
                     className={styles.habInfo}
-                    defaultValue={infos?.dice}
+                    defaultValue={handleDice(infos?.dice)}
                     readOnly
                     onClick={rollDice}
                 />

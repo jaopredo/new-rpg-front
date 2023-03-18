@@ -1,4 +1,4 @@
-import { Children, useRef, useEffect, useState } from 'react'
+import { Children, useState } from 'react'
 import { GoVerified } from 'react-icons/go'
 import Image from 'next/image'
 
@@ -9,11 +9,10 @@ import sheetStyles from '@/sass/Sheet.module.scss'
 import RpgDices from '@/images/dice-vector.png'
 
 /* API */
-import { getCharSpecialitys } from '@/api/config'
 import { characterAttributesTranslate, characterSpecialitysTranslate } from 'src/func/translate'
 
 /* COMPONENTS */
-import { CharContainer } from '@/components/Containers'
+import { CharContainer, AttrContainer } from '@/components/Containers'
 import Life from '@/components/Life'
 import MentalEnergy from '@/components/MentalEnergy'
 import Level from '@/components/Level'
@@ -27,7 +26,7 @@ interface CharacterProps extends CharacterFormValues {
     roll: (configs: RollConfigsProps) => void,
 }
 
-const Character = ({ roll, basic, attributes, specialitys, combat, level }: CharacterProps) => {
+const Character = ({ roll, basic, attributes, specialitys, combat, level, img }: CharacterProps) => {
     const [ showLevelUpForm, setShowLevelUpForm ] = useState<boolean>(false)
 
     const [ advantages, setAdvantages ] = useState<number>(0)
@@ -54,8 +53,8 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                     <input type="number" className={charStyles.desvantagens} onChange={e => setDisadvantages(Number(e.target.value))} defaultValue={0} min={0} id="desvantagens" />
                 </li>
             </ul>
-            <div className={sheetStyles.attrContainer}>
-                <h3>ATRIBUTOS</h3>
+            <AttrContainer bgImg={img} className={sheetStyles.attrContainer}>
+                { !img && <h3>ATRIBUTOS</h3> }
                 <ul className='generic-list'>
                     {Children.toArray((Object.keys(attributes) as Array<keyof typeof attributes>)?.map((id) => <li>
                         {/**
@@ -81,7 +80,7 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level }: Char
                     </li>
                     ))}
                 </ul>
-            </div>
+            </AttrContainer>
         </div>
         <div className={sheetStyles.specsFieldset}>
             <h2>Especialidades</h2>

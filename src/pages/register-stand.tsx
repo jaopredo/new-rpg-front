@@ -113,6 +113,10 @@ function SubStand({ register }: Omit<StandFormsProps, "maxPoints">) {
                     <label htmlFor='subStandWeakPoint'>Ponto fraco: </label>
                     <input id='subStandWeakPoint' type="text" {...register('substand.basic.weakPoint')}/>
                 </li>
+                <li>
+                    <label htmlFor="subStandImg">Link Imagem: </label>
+                    <input id='subStandImg' type="text" {...register('substand.basic.img')} />
+                </li>
             </ul>
         </fieldset>
         <fieldset className={styles.subStandAttributes}>
@@ -489,7 +493,7 @@ const RegisterStand: React.FC = () => {
         }
         if (!!newData.substand) {
             const substandResponse = await registerSubstand({
-                standId: standResponse.standId,
+                charId,
                 ...newData.substand
             })
 
@@ -543,7 +547,7 @@ const RegisterStand: React.FC = () => {
                     </li>
                     {!isActStand && <li>
                         <label htmlFor="standImage">Link da Imagem: </label>
-                        <input id="standImage" {...register('stand.img')} />
+                        <input id="standImage" {...register('stand.basic.img')} />
                     </li>}
                 </ul>
             </fieldset>
