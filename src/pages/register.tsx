@@ -98,8 +98,6 @@ export default function Register() {
             for (let item of response.items) {
                 putItem(charResponse._id, item)
             }
-
-            Router.push('/logged')
         } else {
             const response = await registerPlayer(data)
             if (response.token) {
@@ -110,6 +108,8 @@ export default function Register() {
                 setErrorMsg(response.msg)
             }
         }
+
+        Router.push('/logged')
     }
 
     return <MainContainer>
