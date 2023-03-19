@@ -6,11 +6,13 @@ import Router from "next/router"
 import sheetStyle from '@/sass/Sheet.module.scss'
 import styles from './style.module.scss'
 
+import { characterAttributesTranslate, characterSpecialitysTranslate } from "src/func/translate"
+
 /* COMPONENTS */
 import { WindowContainer, Error } from "../Containers"
 
 /* TYPES */
-import { CharacterAttributes, CharacterSpecialitys } from "@/types/*"
+import { CharacterAttributes, CharacterAttributesKeys, CharacterSpecialitys } from "@/types/character"
 import { levelUp } from "@/api/character"
 
 interface LevelUpFormProps {
@@ -32,7 +34,7 @@ const LevelUpForm = ({ closeWindow, attributes, specialitys }: LevelUpFormProps)
 
     const seekSpecArea = (spec: string) => {
         let actualArea
-        Object.keys(specialitys).forEach(specArea => {
+        (Object.keys(specialitys) as Array<keyof typeof specialitys>).forEach(specArea => {
             Object.keys(specialitys[specArea]).forEach(key => {
                 if (key === spec) actualArea = specArea
             })
@@ -60,7 +62,7 @@ const LevelUpForm = ({ closeWindow, attributes, specialitys }: LevelUpFormProps)
             return
         }
 
-        const response = await levelUp(getCookie("charId"), newData)
+        const response = await levelUp(getCookie("charId") as string, newData)
         if (response.error) {
             setErrorMsg("Um erro aconteceu!")
             return
@@ -84,8 +86,8 @@ const LevelUpForm = ({ closeWindow, attributes, specialitys }: LevelUpFormProps)
             { choose == "attribute" && <>
                 <h2 className={styles.attrTitle}>VOCÊ TEM <span>1 PONTO</span> PARA DISTRIBUIR</h2>
                 <ul>
-                    {Children.toArray(Object.keys(attributes).map((attr) => <li className={styles.levelUpAttributeContainer}>
-                        <label htmlFor={attr+`levelup`}>{attr}</label>
+                    {Children.toArray((Object.keys(attributes) as Array<keyof typeof attributes>).map((attr) => <li className={styles.levelUpAttributeContainer}>
+                        <label htmlFor={attr+`levelup`}>{characterAttributesTranslate[attr]}</label>
                         <span className={sheetStyle.spanContainer}>{ actualCharAttrInfos[attr] }</span>
                         <input type="radio" id={attr+"levelup"} value={attr} {...register(`obj.label`)}/>
                     </li>))}
@@ -94,12 +96,15 @@ const LevelUpForm = ({ closeWindow, attributes, specialitys }: LevelUpFormProps)
             { choose == "spec" && <>
                 <h2 className={styles.attrTitle}>VOCÊ PODE ESCOLHER <span>1 ESPECIALIDADE</span></h2>
                 <select {...register('obj.newSpec')}>
-                    {Children.toArray(Object.keys(specialitys).map(area => <optgroup label={area}>
-                        {Children.toArray(Object.keys(specialitys[area]).map(
-                            spec => !specialitys[area][spec] &&
-                                <option value={spec}>{spec}</option>
-                        ))}
-                    </optgroup>))}
+                    {Children.toArray((Object.keys(specialitys) as Array<keyof typeof specialitys>).map(area => {
+                        const specArea = specialitys[area]
+                        return <optgroup label={characterAttributesTranslate[area]}>
+                            {Children.toArray((Object.keys(specArea) as Array<keyof typeof specArea>).map(
+                                spec => !specArea[spec] &&
+                                    <option value={spec}>{characterSpecialitysTranslate[spec]}</option>
+                            ))}
+                        </optgroup>
+                    }))}
                 </select>
             </> }
             <button>UPAR</button>

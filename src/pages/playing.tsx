@@ -117,7 +117,11 @@ const Playing = () => {
             <li onClick={() => setShowing("inventory")}>INVENTÁRIO</li>
             <li onClick={() => Router.back()}><ImExit/></li>
         </menu>
-        {(showing == "char" && !!charInfos) && <Character roll={roll} {...charInfos} />}
+        {(showing == "char" && !!charInfos) && <Character
+            standResistence={standInfos?.attributes?.durability}
+            substandResistence={substandInfos?.attributes?.durability}
+            roll={roll}
+            {...charInfos} />}
         {(showing == "stand" && !!standInfos) && <Stand barrage={barrage} roll={roll} stand={standInfos} substand={substandInfos} />}
         {(showing == "stand" && !!!standInfos) && <div>
             NENHUM STAND ENCONTRADO, DESEJA <Link href='/register-stand'>CRIAR UM NOVO STAND?</Link>

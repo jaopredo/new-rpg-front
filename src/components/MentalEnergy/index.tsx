@@ -8,7 +8,9 @@ import { saveMentalEnergy } from '@/api/character'
 
 interface MentalEnergyProps {
     maxMentalEnergy: number,
-    actualMentalEnergy: number
+    actualMentalEnergy: number,
+    standResistence?: number,
+    substandResistence?: number,
 }
 
 const MaxMentalEnergy = styled.div`
@@ -26,9 +28,9 @@ const ActualMentalEnergyContainer = styled.div`
     background: #4053fd;
 `
 
-const MentalEnergy = ({ maxMentalEnergy, actualMentalEnergy }: MentalEnergyProps) => {
-    const actualMentalEnergyContainerRef = useRef<HTMLDivElement>()
-    const mentalEnergyInputRef = useRef()
+const MentalEnergy = ({ maxMentalEnergy, actualMentalEnergy, standResistence, substandResistence }: MentalEnergyProps) => {
+    const actualMentalEnergyContainerRef = useRef<HTMLDivElement>(null)
+    const mentalEnergyInputRef = useRef<HTMLInputElement>(null)
 
     const [ actualMentalEnergyState, setActualMentalEnergyState ] = useState<number>(actualMentalEnergy)
 
@@ -41,7 +43,7 @@ const MentalEnergy = ({ maxMentalEnergy, actualMentalEnergy }: MentalEnergyProps
         if (actualMentalEnergyContainerRef.current) actualMentalEnergyContainerRef.current.style.width = `${percentage}%`
 
         async function save() {
-            if (actualMentalEnergyState != actualMentalEnergy) await saveMentalEnergy(getCookie("charId"), actualMentalEnergyState)
+            if (actualMentalEnergyState != actualMentalEnergy) await saveMentalEnergy(getCookie("charId") as string, actualMentalEnergyState)
         }
         save()
     }, [ actualMentalEnergyState ])
@@ -84,9 +86,10 @@ const MentalEnergy = ({ maxMentalEnergy, actualMentalEnergy }: MentalEnergyProps
             </p>
         </div>
         <ul className={charStyles.mentalButtons}>
-            {/* <li><button className='roll-button' onClick={() =>
+            {standResistence && <li><button className='roll-button' onClick={() => {
                 setActualMentalEnergyState(actualMentalEnergyState - (standResistence + 1))
-            }>STAND</button></li> */}
+                if (mentalEnergyInputRef.current) mentalEnergyInputRef.current.value = (actualMentalEnergyState - (standResistence + 1)).toString()
+            }}>STAND</button></li>}
             <li><button className={charStyles.rollButton} onClick={() => {
                 setActualMentalEnergyState(actualMentalEnergyState - 20)
                 if (mentalEnergyInputRef.current) mentalEnergyInputRef.current.value = (actualMentalEnergyState - 20).toString()
@@ -95,9 +98,10 @@ const MentalEnergy = ({ maxMentalEnergy, actualMentalEnergy }: MentalEnergyProps
                 setActualMentalEnergyState(actualMentalEnergyState - 15)
                 if (mentalEnergyInputRef.current) mentalEnergyInputRef.current.value = (actualMentalEnergyState - 15).toString()
             }}>SECUNDÁRIA</button></li>
-            {/* { subStandResistence && <li><button className='roll-button' onClick={() =>
-                setActualMentalEnergyState(actualMentalEnergyState - (subStandResistence + 1))
-            }>SUB-STAND</button></li> } */}
+            { substandResistence && <li><button className='roll-button' onClick={() => {
+                setActualMentalEnergyState(actualMentalEnergyState - (substandResistence + 1))
+                if (mentalEnergyInputRef.current) mentalEnergyInputRef.current.value = (actualMentalEnergyState - (substandResistence + 1)).toString()
+            }}>SUB-STAND</button></li> }
             <li><button className={charStyles.rollButton} onClick={() => {
                 setActualMentalEnergyState(maxMentalEnergy)
                 if (mentalEnergyInputRef.current) mentalEnergyInputRef.current.value = maxMentalEnergy.toString()

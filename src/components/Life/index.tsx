@@ -27,14 +27,14 @@ const ActualLifeContainer = styled.div`
 `;
 
 const Life = ({ maxLife, actualLife }: LifeProps) => {
-    const actualLifeContainerRef = useRef<HTMLDivElement>()
-    const lifeInputRef = useRef()
+    const actualLifeContainerRef = useRef<HTMLDivElement>(null)
+    const lifeInputRef = useRef<HTMLInputElement>(null)
 
     const [ actualLifeState, setActualLifeState ] = useState<number>(actualLife)
 
     useEffect(() => {
         async function setData() {
-            if(actualLifeState != actualLife) await saveLife(getCookie("charId"), actualLifeState)
+            if(actualLifeState != actualLife) await saveLife(getCookie("charId") as string, actualLifeState)
         }
         setData()
 

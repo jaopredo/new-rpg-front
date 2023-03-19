@@ -26,9 +26,11 @@ import { getCookie } from 'cookies-next'
 
 interface CharacterProps extends CharacterFormValues {
     roll: (configs: RollConfigsProps) => void,
+    standResistence?: number,
+    substandResistence?: number
 }
 
-const Character = ({ roll, basic, attributes, specialitys, combat, level, img }: CharacterProps) => {
+const Character = ({ roll, basic, attributes, specialitys, combat, level, img, standResistence, substandResistence }: CharacterProps) => {
     const charId = getCookie('charId') as string
     const [ showLevelUpForm, setShowLevelUpForm ] = useState<boolean>(false)
 
@@ -123,6 +125,8 @@ const Character = ({ roll, basic, attributes, specialitys, combat, level, img }:
             {combat.actualMentalEnergy && <MentalEnergy
                 actualMentalEnergy={combat.actualMentalEnergy}
                 maxMentalEnergy={combat.mentalEnergy}
+                standResistence={standResistence}
+                substandResistence={substandResistence}
             />}
         </div>
         <div className={sheetStyles.movimentArea}>

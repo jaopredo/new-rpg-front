@@ -50,8 +50,8 @@ const ActualXpContainer = styled.div`
 `
 
 const Level = ({ actualLevel, maxXP, actualXP, setShowLevelUpForm }: LevelProps) => {
-    const actualXPInputRef = useRef()
-    const actualXPContainerRef = useRef()
+    const actualXPInputRef = useRef<HTMLInputElement>(null)
+    const actualXPContainerRef = useRef<HTMLDivElement>(null)
 
     const [ onMaxLevel, setOnMaxLevel ] = useState<boolean>(false)
     const [ canLevelUp, setCanLevelUp ] = useState<boolean>(false)
@@ -61,7 +61,7 @@ const Level = ({ actualLevel, maxXP, actualXP, setShowLevelUpForm }: LevelProps)
     useEffect(() => {
         async function getData() {
             setOnMaxLevel(actualLevel == await getMaxLevel())
-            await saveXP(getCookie("charId"), actualXPState)
+            await saveXP(getCookie("charId") as string, actualXPState)
         }
         getData()
 
