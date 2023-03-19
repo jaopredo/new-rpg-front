@@ -1,6 +1,7 @@
 import { useEffect, useState, Children } from 'react'
 import { AiOutlineUserAdd } from 'react-icons/ai'
 import Router from 'next/router'
+import Link from 'next/link'
 
 import styles from '@/sass/Logged.module.scss'
 

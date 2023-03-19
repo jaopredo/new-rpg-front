@@ -1,6 +1,16 @@
 @use "./modules/mixins.scss";
 @use "./modules/colors.scss" as *;
 
+.getOldCharacterDiv {
+    position: absolute;
+    bottom: -40px;
+    font-size: 1.4em;
+    background: white;
+    box-shadow: 3px 3px 10px black;
+    padding: 10px;
+    border-radius: 4px;
+}
+
 .addIcon {
     color: $global-green;
     font-size: 3em;

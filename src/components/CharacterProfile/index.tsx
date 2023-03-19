@@ -35,7 +35,7 @@ const CharacterProfile = ({ id, onClick }: CharProfileProps) => {
             { charInfos?.img && <Image width={100} height={100} src={charInfos?.img} alt="" /> }
             { !charInfos?.img && <BsFillPersonFill/> }
         </div>
-        <div onClick={(e) => {
+        <div className={styles.textContainer} onClick={(e) => {
             setCookie("charId", id)
             onClick(e)
         }}>

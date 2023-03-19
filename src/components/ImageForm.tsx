@@ -9,7 +9,7 @@ import { updateCharacterImage } from '@/api/character'
 
 const ImageFormComponent = styled.form`
     position: absolute;
-    z-index: 4;
+    z-index: 1;
 
     display: flex;
     flex-direction: column;

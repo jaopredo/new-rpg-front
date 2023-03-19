@@ -140,11 +140,13 @@ export const DiceContainer = styled.div`
 
     color: white;
     font-family: Arial, Helvetica, sans-serif;
+
+    z-index: 2;
     h1 {
-        z-index: 2;
+        z-index: 3;
     }
     button {
-        z-index: 2;
+        z-index: 3;
         color: #ff4e4e;
         font-size: 1.5em;
         font-weight: bold;

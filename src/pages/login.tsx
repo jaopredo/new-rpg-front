@@ -21,20 +21,24 @@ export default function Register() {
 
     const { register, handleSubmit } = useForm<PlayerFormValues>()
     const onSubmit: SubmitHandler<PlayerFormValues> = async (data) => {
+        setIsLoading(true)
+
         if (data.password.length < 8) {
             setErrorMsg("A senha é menor que 8 caracteres")
             return
         }
-        setIsLoading(true)
+
         const response = await loginPlayer(data)
-        if (response.token) {
-            setCookie('token', response.token)
-            Router.push('/logged')
-        }
+
         if (response.error) {
             setIsLoading(false)
             setErrorMsg(response.msg)
+            return
         }
+
+        setCookie('token', response.token)
+        
+        Router.push('/logged')
     }
 
     return <MainContainer>
